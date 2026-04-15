@@ -1,0 +1,2238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adhi — Web Designer & Developer</title>
+  <meta name="description" content="Portfolio of Adhi — web designer and developer crafting high-end digital experiences. Featured work includes Mileage Mafia, Kemon, Lune Studio, and more." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ═══════════════════════════════════════════
+       DESIGN SYSTEM
+    ═══════════════════════════════════════════ */
+    :root {
+      --bg:         #080808;
+      --bg-alt:     #0d0d0d;
+      --surface:    #111111;
+      --border:     rgba(255,255,255,0.07);
+      --text:       #f0ede8;
+      --text-dim:   rgba(240,237,232,0.45);
+      --text-muted: rgba(240,237,232,0.22);
+      --accent:     #EAEAEA;       /* liquid chrome — portfolio signature */
+      --accent-dim: rgba(234,234,234,0.12);
+      --accent-glow:rgba(234,234,234,0.25);
+
+      --font-display: 'DM Serif Display', Georgia, serif;
+      --font-ui:      'Syne', sans-serif;
+      --font-body:    'Inter', sans-serif;
+
+      --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-spring:cubic-bezier(0.34, 1.56, 0.64, 1);
+      --ease-in-out:cubic-bezier(0.76, 0, 0.24, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      cursor: none;
+    }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ═══════════════════════════════════════════
+       CUSTOM CURSOR
+    ═══════════════════════════════════════════ */
+    #cursor-dot {
+      position: fixed;
+      top: 0; left: 0;
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.08s, background 0.2s;
+    }
+    #cursor-ring {
+      position: fixed;
+      top: 0; left: 0;
+      width: 36px; height: 36px;
+      border: 1.5px solid var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.05s, width 0.3s var(--ease-out), height 0.3s var(--ease-out), opacity 0.3s, border-color 0.3s;
+      opacity: 0.6;
+    }
+    body:has(a:hover) #cursor-dot,
+    body:has(button:hover) #cursor-dot { transform: translate(-50%,-50%) scale(2); }
+    body:has(a:hover) #cursor-ring,
+    body:has(button:hover) #cursor-ring { width: 60px; height: 60px; opacity: 0.3; }
+    .cursor-on-project #cursor-ring { width: 80px; height: 80px; border-color: var(--accent); opacity: 1; }
+    .cursor-on-project #cursor-dot  { background: var(--accent); }
+
+    /* ═══════════════════════════════════════════
+       NOISE OVERLAY
+    ═══════════════════════════════════════════ */
+    #noise {
+      position: fixed;
+      inset: 0;
+      z-index: 9997;
+      pointer-events: none;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px;
+    }
+
+    /* ═══════════════════════════════════════════
+       NAVIGATION
+    ═══════════════════════════════════════════ */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.75rem 3rem;
+      mix-blend-mode: difference;
+    }
+    .nav-logo {
+      font-family: var(--font-ui);
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 0; right: 100%;
+      height: 1px;
+      background: var(--accent);
+      transition: right 0.3s var(--ease-out);
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { right: 0; }
+
+    /* ═══════════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════════ */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 3rem 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Animated grid background */
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 80px 80px;
+      pointer-events: none;
+      animation: gridFade 2s ease forwards;
+    }
+    @keyframes gridFade { from { opacity: 0; } to { opacity: 1; } }
+
+    /* Gradient orbs */
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+    }
+    .hero-orb-1 {
+      width: 600px; height: 600px;
+      background: rgba(200,255,87,0.06);
+      top: -10%; right: -5%;
+      animation: orbFloat 8s ease-in-out infinite;
+    }
+    .hero-orb-2 {
+      width: 400px; height: 400px;
+      background: rgba(100,200,255,0.04);
+      bottom: 10%; left: -5%;
+      animation: orbFloat 11s ease-in-out infinite reverse;
+    }
+    @keyframes orbFloat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-40px) scale(1.05); }
+    }
+
+    .hero-content { position: relative; z-index: 2; max-width: 1400px; }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: revealUp 0.8s 0.2s var(--ease-out) forwards;
+    }
+    .hero-eyebrow-line {
+      width: 32px; height: 1px;
+      background: var(--accent);
+    }
+    .hero-eyebrow-text {
+      font-family: var(--font-ui);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .hero-headline {
+      font-family: var(--font-display);
+      font-size: clamp(4.5rem, 9vw, 11rem);
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      opacity: 0;
+      transform: translateY(40px);
+      animation: revealUp 1s 0.35s var(--ease-out) forwards;
+    }
+    .hero-headline em {
+      font-style: italic;
+      color: var(--text-dim);
+    }
+    .hero-headline .accent-text {
+      -webkit-text-stroke: 1px var(--accent);
+      color: transparent;
+    }
+
+    .hero-bottom {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-top: 3rem;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: revealUp 0.8s 0.65s var(--ease-out) forwards;
+    }
+    .hero-desc {
+      max-width: 38ch;
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--text-dim);
+      line-height: 1.75;
+    }
+    .hero-desc strong { color: var(--text); font-weight: 500; }
+
+    .hero-scroll-cue {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .scroll-text {
+      font-family: var(--font-ui);
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      writing-mode: vertical-rl;
+    }
+    .scroll-line {
+      width: 1px;
+      height: 60px;
+      background: linear-gradient(to bottom, var(--text-muted), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.3; transform: scaleY(1); }
+      50% { opacity: 1; transform: scaleY(0.7); transform-origin: top; }
+    }
+
+    @keyframes revealUp {
+      to { opacity: 1; transform: none; }
+    }
+
+    /* ═══════════════════════════════════════════
+       MARQUEE STRIP
+    ═══════════════════════════════════════════ */
+    .marquee-strip {
+      overflow: hidden;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 0;
+      background: var(--bg-alt);
+    }
+    .marquee-track {
+      display: flex;
+      gap: 0;
+      width: max-content;
+      animation: marqueeScroll 25s linear infinite;
+    }
+    .marquee-item {
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+      padding: 0 2.5rem;
+      white-space: nowrap;
+    }
+    .marquee-item span {
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .marquee-sep {
+      width: 4px; height: 4px;
+      background: var(--accent);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    @keyframes marqueeScroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ═══════════════════════════════════════════
+       PROJECTS SECTION
+    ═══════════════════════════════════════════ */
+    .projects {
+      padding: 8rem 3rem;
+    }
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-label {
+      font-family: var(--font-ui);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 5vw, 5rem);
+      line-height: 0.95;
+      color: var(--text);
+    }
+    .section-count {
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* Project items — big editorial list */
+    .project-list { display: flex; flex-direction: column; }
+
+    .project-item {
+      position: relative;
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .project-item-inner {
+      display: grid;
+      grid-template-columns: 80px 1fr auto;
+      align-items: center;
+      gap: 3rem;
+      padding: 3.5rem 0;
+      transition: padding 0.4s var(--ease-out);
+      cursor: none;
+    }
+    .project-item:hover .project-item-inner {
+      padding: 3.5rem 1.5rem;
+    }
+
+    /* Hover fill */
+    .project-item::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--surface);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.5s var(--ease-in-out);
+      z-index: 0;
+    }
+    .project-item:hover::before { transform: scaleX(1); }
+
+    .project-item > * { position: relative; z-index: 1; }
+    .project-item-inner > * { position: relative; z-index: 1; }
+
+    .project-num {
+      font-family: var(--font-ui);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      transition: color 0.3s;
+    }
+    .project-item:hover .project-num { color: var(--accent); }
+
+    .project-info {}
+    .project-name {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4.5vw, 4.5rem);
+      line-height: 1;
+      color: var(--text);
+      transition: color 0.3s;
+      margin-bottom: 0.5rem;
+    }
+    .project-item:hover .project-name { color: var(--text); }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.6rem;
+    }
+    .project-tag {
+      font-family: var(--font-ui);
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      transition: border-color 0.3s, color 0.3s;
+    }
+    .project-item:hover .project-tag {
+      border-color: rgba(200,255,87,0.3);
+      color: var(--accent);
+    }
+
+    .project-meta {
+      text-align: right;
+    }
+    .project-year {
+      font-family: var(--font-ui);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      display: block;
+    }
+    .project-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-ui);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      transition: color 0.3s, gap 0.3s;
+    }
+    .project-item:hover .project-cta {
+      color: var(--accent);
+      gap: 0.8rem;
+    }
+    .project-cta-arrow {
+      display: inline-block;
+      transition: transform 0.3s var(--ease-spring);
+    }
+    .project-item:hover .project-cta-arrow { transform: translate(4px, -2px); }
+
+    /* Floating image preview on hover */
+    .project-preview {
+      position: fixed;
+      pointer-events: none;
+      z-index: 500;
+      width: 380px;
+      height: 240px;
+      border-radius: 4px;
+      overflow: hidden;
+      opacity: 0;
+      transform: scale(0.9) rotate(-2deg);
+      transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out);
+      box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px var(--border);
+    }
+    .project-preview.visible {
+      opacity: 1;
+      transform: scale(1) rotate(-1deg);
+    }
+    .project-preview iframe,
+    .project-preview .preview-placeholder {
+      width: 100%; height: 100%;
+      border: none;
+      pointer-events: none;
+    }
+    .preview-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-ui);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      gap: 0.5rem;
+    }
+    .preview-placeholder-icon {
+      font-size: 2rem;
+      opacity: 0.3;
+    }
+
+    /* ═══════════════════════════════════════════
+       FEATURED PROJECT SHOWCASES  (full-width)
+    ═══════════════════════════════════════════ */
+    .features { padding: 4rem 0 8rem; }
+
+    .feature-block {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 80vh;
+      overflow: hidden;
+      border-top: 1px solid var(--border);
+    }
+    .feature-block.reverse { direction: rtl; }
+    .feature-block.reverse > * { direction: ltr; }
+
+    .feature-visual {
+      position: relative;
+      overflow: hidden;
+      background: var(--surface);
+    }
+    .feature-iframe-wrap {
+      position: absolute;
+      inset: 0;
+      transform-origin: top left;
+    }
+    .feature-iframe-wrap iframe {
+      width: 1440px;
+      height: 900px;
+      border: none;
+      transform: scale(calc(100% / 1440));
+      transform-origin: top left;
+      pointer-events: none;
+    }
+    .feature-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 60%, rgba(8,8,8,0.8));
+    }
+
+    /* Color-tinted site thumbnails */
+    .feature-thumb {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      overflow: hidden;
+    }
+    .feature-thumb-header {
+      height: 40px;
+      background: rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      padding: 0 1rem;
+      gap: 0.4rem;
+      flex-shrink: 0;
+    }
+    .dot { width: 9px; height: 9px; border-radius: 50%; }
+    .dot-r { background: #ff5f58; }
+    .dot-y { background: #ffbd2e; }
+    .dot-g { background: #28c840; }
+    .feature-thumb-url {
+      flex: 1;
+      background: rgba(255,255,255,0.04);
+      border-radius: 3px;
+      height: 22px;
+      margin: 0 0.5rem;
+      display: flex;
+      align-items: center;
+      padding: 0 0.6rem;
+    }
+    .feature-thumb-url span {
+      font-family: var(--font-body);
+      font-size: 0.55rem;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+    .feature-thumb-body {
+      flex: 1;
+      position: relative;
+    }
+    .site-visual {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-ui);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.1);
+    }
+
+    /* Mileage Mafia visual */
+    .mm-bg {
+      background: #000;
+    }
+    .mm-bg .site-visual { display: none; }
+    .mm-scene {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 100%, rgba(0,255,255,0.08) 0%, transparent 60%);
+      overflow: hidden;
+    }
+    .mm-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,255,255,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,255,0.08) 1px, transparent 1px);
+      background-size: 40px 40px;
+      transform: perspective(400px) rotateX(15deg);
+      transform-origin: bottom;
+    }
+    .mm-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    .mm-text .big {
+      font-family: 'Syne', monospace;
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      color: #00ffff;
+      text-shadow: 0 0 40px rgba(0,255,255,0.5);
+      display: block;
+    }
+    .mm-text .small {
+      font-family: 'Inter', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.3em;
+      color: rgba(0,255,255,0.5);
+      text-transform: uppercase;
+      display: block;
+      margin-top: 0.3rem;
+    }
+
+    /* Kemon visual */
+    .km-bg { background: #121212; }
+    .km-scene {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .km-bar {
+      height: 28px;
+      background: #FF6B35;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .km-bar span {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.48rem;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: #fff;
+      white-space: nowrap;
+      animation: marqueeScroll 8s linear infinite;
+      display: block;
+      width: max-content;
+    }
+    .km-hero-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+    }
+    .km-big {
+      font-family: 'Syne', sans-serif;
+      font-size: 3.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #F5F5F5;
+      line-height: 0.9;
+    }
+    .km-acc { color: #FF6B35; }
+    .km-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.55rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(245,245,245,0.4);
+      margin-top: 0.8rem;
+    }
+    .km-btn {
+      margin-top: 1.2rem;
+      background: #FF6B35;
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.5rem 1.2rem;
+      border-radius: 2px;
+    }
+
+    /* Gayathri visual */
+    .dr-bg { background: #FDF8F5; }
+    .dr-nav-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 40px;
+      background: #fff;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      display: flex;
+      align-items: center;
+      padding: 0 1.5rem;
+      justify-content: space-between;
+    }
+    .dr-nav-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 0.65rem;
+      color: #1a1a1a;
+      letter-spacing: 0.05em;
+    }
+    .dr-hero-area {
+      position: absolute;
+      top: 55px; left: 0; right: 0; bottom: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding: 1.5rem;
+      gap: 1rem;
+      align-items: center;
+    }
+    .dr-left .dr-tag {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.48rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #8B0000;
+      margin-bottom: 0.5rem;
+    }
+    .dr-headline {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem;
+      line-height: 1.1;
+      color: #1a1a1a;
+      margin-bottom: 0.5rem;
+    }
+    .dr-headline em { font-style: italic; color: #8B0000; }
+    .dr-cta-row {
+      display: flex;
+      gap: 0.3rem;
+      margin-top: 0.6rem;
+    }
+    .dr-cta {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.42rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 0.3rem 0.6rem;
+      border-radius: 2px;
+    }
+    .dr-cta-1 { background: #8B0000; color: #fff; }
+    .dr-cta-2 { background: #25D366; color: #fff; }
+    .dr-right {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .dr-photo-circle {
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #e8d5d5, #f5e8e8);
+      border: 3px solid rgba(139,0,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+
+    /* Lune Studio visual */
+    .ls-bg { background: #0A0A0A; }
+    .ls-scene {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .ls-glow {
+      position: absolute;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(177,128,255,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .ls-hero-area {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+    }
+    .ls-nav-dots {
+      position: absolute;
+      top: 1rem; left: 0; right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+    }
+    .ls-nav-dot {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.48rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+    }
+    .ls-big {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 800;
+      line-height: 0.95;
+      color: #fff;
+    }
+    .ls-grad {
+      background: linear-gradient(90deg, #B180FF, #E590FF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .ls-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.55rem;
+      color: rgba(255,255,255,0.4);
+      margin-top: 0.8rem;
+      letter-spacing: 0.05em;
+      line-height: 1.6;
+    }
+    .ls-btn-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .ls-btn {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.48rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+    }
+    .ls-btn-1 { background: #B180FF; color: #fff; }
+    .ls-btn-2 { background: transparent; border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.6); }
+
+    /* Empire Builders / Michael Laffoley visual */
+    .eb-bg { background: #0A0A0A; }
+    .eb-scene {
+      position: absolute;
+      inset: 0;
+    }
+    .eb-hero-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 2rem;
+    }
+    .eb-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .eb-eyebrow-line { width: 20px; height: 1px; background: #00AAFF; }
+    .eb-eyebrow-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.45rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #00AAFF;
+    }
+    .eb-big {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      line-height: 0.9;
+      color: #fff;
+    }
+    .eb-big .eb-acc { color: #00AAFF; }
+    .eb-bar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 40px;
+      background: rgba(0,170,255,0.08);
+      border-top: 1px solid rgba(0,170,255,0.2);
+      display: flex;
+    }
+    .eb-bar-item {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      padding: 0 0.8rem;
+      gap: 0.3rem;
+      border-right: 1px solid rgba(255,255,255,0.05);
+    }
+    .eb-bar-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #00AAFF;
+    }
+    .eb-bar-txt {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.38rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      line-height: 1.3;
+    }
+
+    .feature-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 5rem 4rem;
+    }
+
+    .feature-num {
+      font-family: var(--font-ui);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .feature-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 4.5vw, 5rem);
+      line-height: 0.95;
+      color: var(--text);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .feature-title em { font-style: italic; color: var(--text-dim); }
+    .feature-desc {
+      font-size: 0.95rem;
+      font-weight: 300;
+      color: var(--text-dim);
+      line-height: 1.8;
+      margin-bottom: 2rem;
+      max-width: 38ch;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .feature-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .feature-detail {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .feature-detail-dot {
+      width: 5px; height: 5px;
+      background: var(--accent);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .feature-detail span {
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+    .feature-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-ui);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid rgba(200,255,87,0.3);
+      padding: 0.85rem 1.75rem;
+      transition: background 0.3s, gap 0.3s var(--ease-spring), border-color 0.3s;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .feature-link:hover {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      gap: 1.1rem;
+    }
+    .feature-link-arrow {
+      display: inline-block;
+      transition: transform 0.3s var(--ease-spring);
+    }
+    .feature-link:hover .feature-link-arrow { transform: translate(3px, -2px); }
+
+    /* Scroll reveal classes for features */
+    .reveal-feature { transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out); }
+    .reveal-feature.in { opacity: 1; transform: none; }
+    .d1 { transition-delay: 0.1s !important; }
+    .d2 { transition-delay: 0.2s !important; }
+    .d3 { transition-delay: 0.3s !important; }
+    .d4 { transition-delay: 0.4s !important; }
+    .d5 { transition-delay: 0.5s !important; }
+
+    /* ═══════════════════════════════════════════
+       ABOUT / CODA
+    ═══════════════════════════════════════════ */
+    .about {
+      padding: 10rem 3rem;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+    .about-headline {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 6vw, 7rem);
+      line-height: 0.92;
+      color: var(--text);
+    }
+    .about-headline em { font-style: italic; color: var(--text-dim); }
+    .about-right {}
+    .about-desc {
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--text-dim);
+      line-height: 1.9;
+      margin-bottom: 2.5rem;
+    }
+    .about-desc strong { color: var(--text); font-weight: 500; }
+    .about-links {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .about-link {
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: color 0.2s;
+    }
+    .about-link:hover { color: var(--accent); }
+
+    /* ═══════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════ */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-copy {
+      font-family: var(--font-ui);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .footer-name {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      color: var(--text-dim);
+    }
+
+    /* ═══════════════════════════════════════════
+       SCROLL PROGRESS
+    ═══════════════════════════════════════════ */
+    #scroll-progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      background: var(--accent);
+      z-index: 200;
+      width: 0%;
+      transition: width 0.1s linear;
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+
+    /* ═══════════════════════════════════════════
+       PAGE LOADER
+    ═══════════════════════════════════════════ */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+    }
+    #loader.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-20px);
+    }
+    .loader-name {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      color: var(--text);
+      opacity: 0;
+      animation: revealUp 0.6s 0.2s forwards;
+    }
+    .loader-bar-wrap {
+      width: 200px;
+      height: 1px;
+      background: var(--surface);
+      overflow: hidden;
+    }
+    .loader-bar {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      animation: loadFill 1.2s 0.4s var(--ease-out) forwards;
+    }
+    @keyframes loadFill { to { width: 100%; } }
+    .loader-text {
+      font-family: var(--font-ui);
+      font-size: 0.62rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      opacity: 0;
+      animation: revealUp 0.6s 0.5s forwards;
+    }
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════ */
+    @media (max-width: 900px) {
+      .nav { padding: 1.5rem; }
+      .nav-links { display: none; }
+      .hero { padding: 0 1.5rem 4rem; }
+      .projects { padding: 5rem 1.5rem; }
+      .section-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      .project-item-inner { grid-template-columns: 50px 1fr; gap: 1.5rem; padding: 2rem 0; }
+      .project-meta { display: none; }
+      .feature-block, .feature-block.reverse { grid-template-columns: 1fr; direction: ltr; }
+      .feature-visual { min-height: 40vh; }
+      .feature-info { padding: 3rem 1.5rem; }
+      .about { grid-template-columns: 1fr; gap: 3rem; padding: 5rem 1.5rem; }
+      .footer { flex-direction: column; gap: 1rem; text-align: center; }
+    }
+      /* ═══════════════════════════════════════════
+       MINIMALIST HERO (ORB/FRACTAL VIBE)
+    ═══════════════════════════════════════════ */
+    .minimalist-hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6rem 3rem 4rem;
+      background: #050505; /* Deep dark background */
+      overflow: hidden;
+    }
+    
+    /* Sharp fractal-like floating glow meshes (performant) */
+    .hero-bg-orbs {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      opacity: 0.8;
+    }
+    .fluid-orb {
+      position: absolute;
+      border-radius: 50%;
+      mix-blend-mode: screen;
+      filter: blur(60px);
+    }
+    .fluid-orb-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(160, 200, 255, 0.4) 0%, transparent 70%);
+      top: 0%; left: 20%;
+      animation: orbMove1 15s infinite alternate ease-in-out;
+    }
+    .fluid-orb-2 {
+      width: 750px; height: 750px;
+      background: radial-gradient(circle, rgba(200, 255, 87, 0.25) 0%, transparent 70%);
+      bottom: 0%; right: 10%;
+      animation: orbMove2 18s infinite alternate ease-in-out;
+    }
+    .fluid-orb-3 {
+      width: 550px; height: 550px;
+      background: radial-gradient(circle, rgba(177, 128, 255, 0.3) 0%, transparent 70%);
+      top: 40%; left: 40%;
+      animation: orbMove3 20s infinite alternate ease-in-out;
+    }
+    @keyframes orbMove1 {
+      0% { transform: translate3d(0, 0, 0) scale(1); }
+      50% { transform: translate3d(80px, -60px, 0) scale(1.1); }
+      100% { transform: translate3d(-40px, 50px, 0) scale(0.9); }
+    }
+    @keyframes orbMove2 {
+      0% { transform: translate3d(0, 0, 0) scale(1); }
+      50% { transform: translate3d(-100px, 80px, 0) scale(1.05); }
+      100% { transform: translate3d(50px, -40px, 0) scale(0.95); }
+    }
+    @keyframes orbMove3 {
+      0% { transform: translate3d(0, 0, 0) scale(1.1); }
+      50% { transform: translate3d(-60px, -60px, 0) scale(0.9); }
+      100% { transform: translate3d(60px, 60px, 0) scale(1.2); }
+    }
+    
+    /* Grain overlay just for the hero to give texture */
+    .hero-noise-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      opacity: 0.25;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    .hero-content-minimal {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      max-width: 850px;
+      margin: 0 auto;
+    }
+    .hero-text-minimal {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .hero-headline-minimal {
+      font-family: var(--font-display);
+      font-size: clamp(3.5rem, 8vw, 7rem);
+      color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 2rem;
+      letter-spacing: -0.02em;
+    }
+    .hero-desc-minimal {
+      font-family: var(--font-body);
+      font-size: 1.1rem;
+      font-weight: 300;
+      color: var(--text-dim);
+      line-height: 1.8;
+      max-width: 55ch;
+      margin-bottom: 3rem;
+    }
+    .hero-inline-link {
+      color: var(--accent);
+      text-decoration: none;
+      position: relative;
+      display: inline-block;
+      transition: color 0.3s;
+    }
+    .hero-inline-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0; right: 0;
+      height: 1px;
+      background: var(--accent);
+      opacity: 0.5;
+      transition: opacity 0.3s;
+    }
+    .hero-inline-link:hover { color: var(--text); }
+    .hero-inline-link:hover::after { opacity: 1; background: var(--text); }
+    
+    .hero-links-minimal {
+      display: flex;
+      gap: 1.5rem;
+    }
+    .hero-sublink {
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text);
+      padding: 1rem 2rem;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      background: rgba(255,255,255,0.03);
+      backdrop-filter: blur(10px);
+    }
+    .hero-sublink:hover { 
+      border-color: var(--accent); 
+      color: var(--accent); 
+      background: rgba(200,255,87,0.05);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 900px) {
+      .minimalist-hero { padding: 8rem 1.5rem 4rem; }
+      .hero-content-minimal { text-align: left; align-items: flex-start; }
+      .hero-text-minimal { align-items: flex-start; }
+    }
+    .project-tag {
+      position: relative;
+      z-index: 10;
+      pointer-events: auto;
+    }
+  </style>
+  <style>
+    .hero-canvas-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      /* Add slight blur on the canvas itself to smooth out particles without relying on expensive SVG container filters */
+      
+    }
+      .project-tag {
+      position: relative;
+      z-index: 10;
+      pointer-events: auto;
+    }
+  </style>
+  <link rel="icon" href="file:///Users/Adhi/Downloads/xna1fs2q1e751.jpg" type="image/jpeg">
+</head>
+<body>
+  <!-- Page loader -->
+  <div id="loader">
+    <div class="loader-name">Adhi</div>
+    <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+    <div class="loader-text">Loading Portfolio</div>
+  </div>
+
+  <!-- Noise overlay -->
+  
+
+  <!-- Custom cursor -->
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- Scroll progress -->
+  <div id="scroll-progress"></div>
+
+  <!-- Navigation -->
+  <nav class="nav" role="navigation">
+    <div class="nav-logo">Adhi</div>
+    <ul class="nav-links">
+      <li><a href="#projects">Work</a></li>
+      <li><a href="#featured">Featured</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="mailto:adhityan2310@icloud.com">Say Hello ↗</a></li>
+    </ul>
+  </nav>
+
+  <!-- ══════════════════ HERO ══════════════════ -->
+  <section class="hero minimalist-hero" id="hero" aria-label="Hero">
+    <canvas id="hero-canvas" class="hero-canvas-bg"></canvas>
+    
+    
+    <div class="hero-content-minimal">
+      <div class="hero-text-minimal reveal-feature d1">
+        <h1 class="hero-headline-minimal">I'm Adhityan.</h1>
+        <p class="hero-desc-minimal">
+          I'm a designer and developer. I build websites, interactive interfaces, and bold identities. 
+          I focus on consumer and high-end projects because I care about the emotional resonance of the web. 
+          In my free time, I collaborate on visual experiments like <a href="https://nicopowa.github.io/ripples3/" target="_blank" class="hero-inline-link">Ripples 3</a>. 
+          I love minimal typography, immersive interactions, and well-curated aesthetics. 
+          I live on the internet, so <a href="mailto:adhityan2310@icloud.com" class="hero-inline-link">say hi.</a>
+        </p>
+        <div class="hero-links-minimal">
+          <a href="#projects" class="hero-sublink">View Selected Work ↓</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ MARQUEE ══════════════════ -->
+  <div class="marquee-strip" aria-hidden="true">
+    <div class="marquee-track">
+      <!-- Two identical sets for seamless loop -->
+      <div class="marquee-item"><span>Scroll Interaction</span><div class="marquee-sep"></div></div>
+      <div class="marquee-item"><span>Motion Design</span><div class="marquee-sep"></div></div>
+      <div class="marquee-item"><span>Brand Identity</span><div class="marquee-sep"></div></div>
+      <div class="marquee-item"><span>UI Engineering</span><div class="marquee-sep"></div></div>
+      <div class="marquee-item"><span>Conversion-First</span><div class="marquee-sep"></div></div>
+      <div class="marquee-item"><span>Dark Mode Masters</span><div class="marquee-sep"></div></div>
+      <div class="marquee-item"><span>Animation Driven</span><div class="marquee-sep"></div></div>
+      <div class="marquee-item"><span>Scroll Interaction</span><div class="marquee-sep"></div></div>
+      <div class="marquee-item"><span>Motion Design</span><div class="marquee-sep"></div></div>
+      <div class="marquee-item"><span>Brand Identity</span><div class="marquee-sep"></div></div>
+      <div class="marquee-item"><span>UI Engineering</span><div class="marquee-sep"></div></div>
+      <div class="marquee-item"><span>Conversion-First</span><div class="marquee-sep"></div></div>
+      <div class="marquee-item"><span>Dark Mode Masters</span><div class="marquee-sep"></div></div>
+      <div class="marquee-item"><span>Animation Driven</span><div class="marquee-sep"></div></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ PROJECTS LIST ══════════════════ -->
+  <section class="projects" id="projects" aria-label="Projects">
+    <div class="section-header">
+      <div>
+        <div class="section-label">Selected Work</div>
+        <h2 class="section-title">What I've<br /><em>Built</em></h2>
+      </div>
+      <span class="section-count">06 Projects</span>
+    </div>
+
+    <div class="project-list" role="list">
+
+      <!-- 01 — Ripples 3 -->
+      <article class="project-item" role="listitem" data-index="0">
+        <div class="project-item-inner">
+          <span class="project-num">01</span>
+          <div class="project-info">
+            <h3 class="project-name">Ripples 3</h3>
+            <div class="project-tags">
+              <span class="project-tag">Creative Coding</span>
+              <span class="project-tag">Collaboration</span>
+              <span class="project-tag">WebGL</span>
+              <span class="project-tag">Interactive</span>
+            </div>
+          </div>
+          <div class="project-meta">
+            <span class="project-year">2023</span>
+            <a href="https://nicopowa.github.io/ripples3/" target="_blank" rel="noopener" class="project-cta">
+              View Site <span class="project-cta-arrow">↗</span>
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 02 — Mileage Mafia -->
+      <article class="project-item" role="listitem" data-index="1">
+        <div class="project-item-inner">
+          <span class="project-num">02</span>
+          <div class="project-info">
+            <h3 class="project-name">Mileage Mafia</h3>
+            <div class="project-tags">
+              <span class="project-tag">Running Club</span>
+              <span class="project-tag">Cyberpunk UI</span>
+              <span class="project-tag">WebGL Grid</span>
+              <span class="project-tag">Dark</span>
+            </div>
+          </div>
+          <div class="project-meta">
+            <span class="project-year">2025</span>
+            <a href="https://mileage-mafia.vercel.app/" target="_blank" rel="noopener" class="project-cta">
+              View Site <span class="project-cta-arrow">↗</span>
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 03 — Kemon -->
+      <article class="project-item" role="listitem" data-index="2">
+        <div class="project-item-inner">
+          <span class="project-num">03</span>
+          <div class="project-info">
+            <h3 class="project-name">Kemon Socks</h3>
+            <div class="project-tags">
+              <span class="project-tag">E-Commerce</span>
+              <span class="project-tag">Brand Makeover</span>
+              <span class="project-tag">Animated Ticker</span>
+              <span class="project-tag">Bold Typography</span>
+            </div>
+          </div>
+          <div class="project-meta">
+            <span class="project-year">2024</span>
+            <a href="https://kemon-demo.vercel.app" target="_blank" rel="noopener" class="project-cta">
+              View Site <span class="project-cta-arrow">↗</span>
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 04 — Gayathri Skin -->
+      <article class="project-item" role="listitem" data-index="3">
+        <div class="project-item-inner">
+          <span class="project-num">04</span>
+          <div class="project-info">
+            <h3 class="project-name">Dr. Gayathri</h3>
+            <div class="project-tags">
+              <span class="project-tag">Medical Clinic</span>
+              <span class="project-tag">WhatsApp CTA</span>
+              <span class="project-tag">Glassmorphism</span>
+              <span class="project-tag">Serif Design</span>
+            </div>
+          </div>
+          <div class="project-meta">
+            <span class="project-year">2025</span>
+            <a href="https://gayathri-skin.vercel.app" target="_blank" rel="noopener" class="project-cta">
+              View Site <span class="project-cta-arrow">↗</span>
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 05 — Lune Studio -->
+      <article class="project-item" role="listitem" data-index="4">
+        <div class="project-item-inner">
+          <span class="project-num">05</span>
+          <div class="project-info">
+            <h3 class="project-name">Lune Studio</h3>
+            <div class="project-tags">
+              <span class="project-tag">Agency Website</span>
+              <span class="project-tag">Purple Gradient</span>
+              <span class="project-tag">Glassmorphism</span>
+              <span class="project-tag">Multi-language</span>
+            </div>
+          </div>
+          <div class="project-meta">
+            <span class="project-year">2026</span>
+            <a href="https://www.lunestudio.in" target="_blank" rel="noopener" class="project-cta">
+              View Site <span class="project-cta-arrow">↗</span>
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 06 — Michael Laffoley -->
+      <article class="project-item" role="listitem" data-index="5">
+        <div class="project-item-inner">
+          <span class="project-num">06</span>
+          <div class="project-info">
+            <h3 class="project-name">Michael Laffoley</h3>
+            <div class="project-tags">
+              <span class="project-tag">Builder</span>
+              <span class="project-tag">Industrial Editorial</span>
+              <span class="project-tag">Diagonal Layout</span>
+              <span class="project-tag">Electric Cyan</span>
+            </div>
+          </div>
+          <div class="project-meta">
+            <span class="project-year">2026</span>
+            <a href="#" class="project-cta">
+              Coming Soon <span class="project-cta-arrow">→</span>
+            </a>
+          </div>
+        </div>
+      </article>
+
+
+
+    </div>
+  </section>
+
+  <!-- Floating preview image (follows cursor) -->
+  <div class="project-preview" id="project-preview" aria-hidden="true">
+    <div class="preview-placeholder" id="preview-inner">
+      <span class="preview-placeholder-icon">◈</span>
+      <span>Preview</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════ FEATURED PROJECTS ══════════════════ -->
+  <section class="features" id="featured" aria-label="Featured Projects">
+
+    <!-- ── Feature 0: Ripples 3 ── -->
+    <div class="feature-block reverse">
+      <div class="feature-visual">
+        <div class="feature-thumb mm-bg" style="background:#050505;">
+          <div class="feature-thumb-header">
+            <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+            <div class="feature-thumb-url"><span>nicopowa.github.io/ripples3</span></div>
+          </div>
+          <div class="feature-thumb-body" style="background:#000; position:relative; overflow:hidden;">
+            <iframe src="https://nicopowa.github.io/ripples3/" style="width: 100%; height: 100%; border: none; filter: contrast(1.1) saturate(1.2); pointer-events: none;" title="Ripples 3 Interactive Preview" aria-hidden="true" tabindex="-1"></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="feature-info">
+        <p class="feature-num reveal-feature d1">Project 01 — 2023</p>
+        <h3 class="feature-title reveal-feature d2">Ripples<br /><em>Three</em></h3>
+        <p class="feature-desc reveal-feature d3">
+          A hypnotic, interactive fluid and ripple simulator built as a collaboration. Move your cursor across the screen to generate realistic, physics-based liquid ripples that bounce and reflect in real-time. It's built heavily on WebGL constraints for maximum performance and visual impact.
+        </p>
+        <div class="feature-details reveal-feature d4">
+          <div class="feature-detail"><div class="feature-detail-dot"></div><span>Physics-Based Fluid Sim</span></div>
+          <div class="feature-detail"><div class="feature-detail-dot"></div><span>High-Performance WebGL</span></div>
+          <div class="feature-detail"><div class="feature-detail-dot"></div><span>Creative Collaboration</span></div>
+          <div class="feature-detail"><div class="feature-detail-dot"></div><span>Interactive UI/UX Art</span></div>
+        </div>
+        <a href="https://nicopowa.github.io/ripples3/" target="_blank" rel="noopener" class="feature-link reveal-feature d5">
+          Play With Ripples <span class="feature-link-arrow">↗</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Feature 1: Mileage Mafia ── -->
+    <div class="feature-block">
+      <div class="feature-visual">
+        <div class="feature-thumb mm-bg">
+          <div class="feature-thumb-header">
+            <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+            <div class="feature-thumb-url"><span>mileage-mafia.vercel.app</span></div>
+          </div>
+          <div class="feature-thumb-body">
+            <div class="mm-scene">
+              <div class="mm-grid"></div>
+              <div class="mm-text">
+                <span class="big">MILEAGE MAFIA</span>
+                <span class="small">Enter Operative Code</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-info">
+        <p class="feature-num reveal-feature d1">Project 02 — 2025</p>
+        <h3 class="feature-title reveal-feature d2">Mileage<br /><em>Mafia</em></h3>
+        <p class="feature-desc reveal-feature d3">
+          A gated, exclusive running club built around a cyberpunk operative aesthetic. 
+          Features a 3D perspective grid, neon glow effects, and a gate entry experience 
+          that makes joining feel like joining a secret society.
+        </p>
+        <div class="feature-details reveal-feature d4">
+          <div class="feature-detail"><div class="feature-detail-dot"></div><span>Perspective 3D CSS Grid</span></div>
+          <div class="feature-detail"><div class="feature-detail-dot"></div><span>Monospace Terminal Typography</span></div>
+          <div class="feature-detail"><div class="feature-detail-dot"></div><span>Neon Glow System</span></div>
+          <div class="feature-detail"><div class="feature-detail-dot"></div><span>Gated Entry UX</span></div>
+        </div>
+        <div class="feature-cta-row reveal-feature d5" style="display:flex; flex-direction:column; align-items:flex-start; gap:1.25rem;">
+          <a href="https://mileage-mafia.vercel.app/" target="_blank" rel="noopener" class="feature-link">
+            See It Live <span class="feature-link-arrow">↗</span>
+          </a>
+          <p class="feature-password" style="font-family:var(--font-ui); font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.1em; cursor:pointer; margin:0;" onclick="this.innerHTML='Entry Code: <span style=\'color:var(--accent)\'>mafia2026</span>'">🔒 Click to reveal entry code</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Feature 2: Kemon (reversed) ── -->
+    <div class="feature-block reverse">
+      <div class="feature-visual">
+        <div class="feature-thumb km-bg">
+          <div class="feature-thumb-header">
+            <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+            <div class="feature-thumb-url"><span>kemon-demo.vercel.app</span></div>
+          </div>
+          <div class="feature-thumb-body">
+            <div class="km-scene">
+              <div class="km-bar">
+                <span>FREE SHIPPING ON ORDERS ABOVE ₹999 &nbsp;·&nbsp; MARATHON TESTED &nbsp;·&nbsp; FREE SHIPPING ON ORDERS ABOVE ₹999 &nbsp;·&nbsp; MARATHON TESTED &nbsp;·&nbsp;</span>
+              </div>
+              <div class="km-hero-area">
+                <div class="km-big">STEP<br /><span class="km-acc">DIFF&shy;ERENTLY</span></div>
+                <div class="km-sub">Performance Socks · Built Different</div>
+                <div class="km-btn">Explore Collection →</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-info">
+        <p class="feature-num reveal-feature d1">Project 03 — 2024</p>
+        <h3 class="feature-title reveal-feature d2">Kemon<br /><em>Socks</em></h3>
+        <p class="feature-desc reveal-feature d3">
+          A full brand makeover for a performance socks label. Bold condensed typography, 
+          animated ticker, carousels, bundle upsells and a "Silent Concierge" popup — 
+          all designed to convert browsers into buyers.
+        </p>
+        <div class="feature-details reveal-feature d4">
+          <div class="feature-detail"><div class="feature-detail-dot"></div><span>Animated Marquee Ticker</span></div>
+          <div class="feature-detail"><div class="feature-detail-dot"></div><span>Bundle Upsell Popup</span></div>
+          <div class="feature-detail"><div class="feature-detail-dot"></div><span>Scroll-Triggered Carousels</span></div>
+          <div class="feature-detail"><div class="feature-detail-dot"></div><span>MRP Price Anchoring</span></div>
+        </div>
+        <a href="https://kemon-demo.vercel.app" target="_blank" rel="noopener" class="feature-link reveal-feature d5">
+          See It Live <span class="feature-link-arrow">↗</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Feature 3: Gayathri Skin ── -->
+    <div class="feature-block">
+      <div class="feature-visual">
+        <div class="feature-thumb dr-bg">
+          <div class="feature-thumb-header" style="background:#fff; border-color:rgba(0,0,0,0.08);">
+            <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+            <div class="feature-thumb-url"><span>gayathri-skin.vercel.app</span></div>
+          </div>
+          <div class="feature-thumb-body" style="background:#FDF8F5; position:relative;">
+            <div class="dr-nav-bar">
+              <span class="dr-nav-logo">Dr. Gayathri's Skin & Hair Clinic</span>
+            </div>
+            <div class="dr-hero-area">
+              <div class="dr-left">
+                <div class="dr-tag">Dermatology &amp; Cosmetology</div>
+                <div class="dr-headline">
+                  Struggling with<br />
+                  <em>acne, pigmentation</em><br />
+                  or hair loss?
+                </div>
+                <div class="dr-cta-row">
+                  <div class="dr-cta dr-cta-1">📞 Call</div>
+                  <div class="dr-cta dr-cta-2">💬 WhatsApp</div>
+                </div>
+              </div>
+              <div class="dr-right">
+                <div class="dr-photo-circle">👩‍⚕️</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-info">
+        <p class="feature-num reveal-feature d1">Project 04 — 2025</p>
+        <h3 class="feature-title reveal-feature d2">Dr.<br /><em>Gayathri</em></h3>
+        <p class="feature-desc reveal-feature d3">
+          A premium medical clinic site blending serif authority with warm, approachable 
+          design. Floating glassmorphism stat cards, italic serif emphasis, and a frictionless 
+          WhatsApp &amp; callback CTA system.
+        </p>
+        <div class="feature-details reveal-feature d4">
+          <div class="feature-detail"><div class="feature-detail-dot"></div><span>Glassmorphism Stat Cards</span></div>
+          <div class="feature-detail"><div class="feature-detail-dot"></div><span>WhatsApp CTA Integration</span></div>
+          <div class="feature-detail"><div class="feature-detail-dot"></div><span>Warm Serif + Sans System</span></div>
+          <div class="feature-detail"><div class="feature-detail-dot"></div><span>Conversion-Optimised Layout</span></div>
+        </div>
+        <a href="https://gayathri-skin.vercel.app" target="_blank" rel="noopener" class="feature-link reveal-feature d5">
+          See It Live <span class="feature-link-arrow">↗</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Feature 4: Lune Studio (reversed) ── -->
+    <div class="feature-block reverse">
+      <div class="feature-visual">
+        <div class="feature-thumb ls-bg">
+          <div class="feature-thumb-header">
+            <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+            <div class="feature-thumb-url"><span>lunestudio.in</span></div>
+          </div>
+          <div class="feature-thumb-body">
+            <div class="ls-scene">
+              <div class="ls-glow"></div>
+              <div class="ls-nav-dots">
+                <span class="ls-nav-dot">Work</span>
+                <span class="ls-nav-dot">Pricing</span>
+                <span class="ls-nav-dot">About</span>
+              </div>
+              <div class="ls-hero-area">
+                <div class="ls-big">We build sites<br />for <span class="ls-grad">real customers</span></div>
+                <div class="ls-sub">Web design agency creating conversion-focused<br />digital experiences.</div>
+                <div class="ls-btn-row">
+                  <div class="ls-btn ls-btn-1">See Live Demos →</div>
+                  <div class="ls-btn ls-btn-2">Learn More</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-info">
+        <p class="feature-num reveal-feature d1">Project 05 — 2026</p>
+        <h3 class="feature-title reveal-feature d2">Lune<br /><em>Studio</em></h3>
+        <p class="feature-desc reveal-feature d3">
+          A dark-mode agency website with radial neon purple gradients, glassmorphism UI elements, 
+          and multi-language support (EN / Tamil / Hindi). Designed to demonstrate premium web 
+          capabilities to prospective clients.
+        </p>
+        <div class="feature-details reveal-feature d4">
+          <div class="feature-detail"><div class="feature-detail-dot"></div><span>Neon Purple Gradient System</span></div>
+          <div class="feature-detail"><div class="feature-detail-dot"></div><span>Glassmorphism UI</span></div>
+          <div class="feature-detail"><div class="feature-detail-dot"></div><span>Multi-language (EN / TN / HI)</span></div>
+          <div class="feature-detail"><div class="feature-detail-dot"></div><span>Client-Proof Live Demos</span></div>
+        </div>
+        <a href="https://www.lunestudio.in" target="_blank" rel="noopener" class="feature-link reveal-feature d5">
+          See It Live <span class="feature-link-arrow">↗</span>
+        </a>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ══════════════════ ABOUT ══════════════════ -->
+  <section class="about" id="about" aria-label="About">
+    <div class="about-left">
+      <h2 class="about-headline">
+        Building for<br />
+        <em>the web's</em><br />
+        wild side.
+      </h2>
+    </div>
+    <div class="about-right">
+      <p class="about-desc">
+        I'm a <strong>web designer and developer</strong> who believes that the best websites
+        make you feel something before you read a single word. Scroll animations, 
+        immersive interactions, cinematic typography — that's my toolkit.
+        <br /><br />
+        From bold <strong>e-commerce brands</strong> to exclusive <strong>running clubs</strong>,
+        I build experiences that convert and captivate.
+      </p>
+      <div class="about-links">
+        <a href="mailto:adhityan2310@icloud.com" class="about-link">Email ↗</a>
+        <a href="#projects" class="about-link">All Work ↑</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ FOOTER ══════════════════ -->
+  <footer class="footer" style="flex-direction:row; justify-content:space-between; align-items:center; padding: 4rem;">
+    <a href="https://github.com/fltydpr23" target="_blank" class="footer-link" style="color:var(--text); text-decoration:none; font-family:var(--font-ui); text-transform:uppercase; font-size:0.8rem; letter-spacing:0.1em; transition:color 0.3s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text)'">github.com/fltydpr23 ↗</a>
+    <a href="#" onclick="window.scrollTo({top:0, behavior:'smooth'}); return false;" class="footer-link" style="color:var(--text); text-decoration:none; font-family:var(--font-ui); text-transform:uppercase; font-size:0.8rem; letter-spacing:0.1em; transition:color 0.3s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text)'">Back to Top ↑</a>
+  </footer>
+
+  <script>
+    // ════════════════════════════════════════
+    // LOADER
+    // ════════════════════════════════════════
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('loader').classList.add('hidden');
+      }, 1600);
+    });
+
+    // ════════════════════════════════════════
+    // CUSTOM CURSOR
+    // ════════════════════════════════════════
+    const dot  = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    let dotX = 0, dotY = 0, ringX = 0, ringY = 0;
+    let mouseX = 0, mouseY = 0;
+
+    document.addEventListener('mousemove', e => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    function animateCursor() {
+      dotX  += (mouseX - dotX)  * 0.35;
+      dotY  += (mouseY - dotY)  * 0.35;
+      ringX += (mouseX - ringX) * 0.12;
+      ringY += (mouseY - ringY) * 0.12;
+
+      dot.style.left  = dotX  + 'px';
+      dot.style.top   = dotY  + 'px';
+      ring.style.left = ringX + 'px';
+      ring.style.top  = ringY + 'px';
+
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+
+    // ════════════════════════════════════════
+    // SCROLL PROGRESS
+    // ════════════════════════════════════════
+    const progressBar = document.getElementById('scroll-progress');
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY;
+      const total    = document.documentElement.scrollHeight - window.innerHeight;
+      progressBar.style.width = (scrolled / total * 100) + '%';
+    }, { passive: true });
+
+    // ════════════════════════════════════════
+    // SCROLL REVEAL (IntersectionObserver)
+    // ════════════════════════════════════════
+    const revealEls = document.querySelectorAll('.reveal-feature');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+
+    revealEls.forEach(el => observer.observe(el));
+
+    // Project items stagger reveal
+    const projectItems = document.querySelectorAll('.project-item');
+    const projectObserver = new IntersectionObserver(entries => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'none';
+          }, 60);
+          projectObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    projectItems.forEach((item, i) => {
+      item.style.opacity = '0';
+      item.style.transform = 'translateY(24px)';
+      item.style.transition = `opacity 0.6s ${i * 0.08}s var(--ease-out), transform 0.6s ${i * 0.08}s var(--ease-out)`;
+      projectObserver.observe(item);
+    });
+
+    // About section reveal
+    const aboutEls = document.querySelectorAll('.about > *');
+    const aboutObs = new IntersectionObserver(entries => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'none';
+          }, i * 120);
+          aboutObs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+
+    aboutEls.forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(30px)';
+      el.style.transition = 'opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out)';
+      aboutObs.observe(el);
+    });
+
+    // ════════════════════════════════════════
+    // PROJECT HOVER PREVIEW (follows mouse)
+    // ════════════════════════════════════════
+    const preview    = document.getElementById('project-preview');
+    const previewIn  = document.getElementById('preview-inner');
+
+    const previewContent = [
+      { bg: '#000', color: '#fff', label: 'RIPPLES 3', sub: 'Interactive Fluid Simulation' },
+      { bg: '#000', color: '#00ffff', label: 'MILEAGE MAFIA', sub: 'Cyberpunk Running Club' },
+      { bg: '#121212', color: '#FF6B35', label: 'KEMON SOCKS', sub: 'Performance Streetwear' },
+      { bg: '#FDF8F5', color: '#8B0000', label: 'DR. GAYATHRI', sub: 'Dermatology Clinic' },
+      { bg: '#0A0A0A', color: '#B180FF', label: 'LUNE STUDIO', sub: 'Web Agency' },
+      { bg: '#0A0A0A', color: '#00AAFF', label: 'MICHAEL LAFFOLEY', sub: 'Builder – Birmingham' },
+    ];
+
+    let previewX = 0, previewY = 0;
+    let previewMouseX = 0, previewMouseY = 0;
+
+    function animatePreview() {
+      previewX += (previewMouseX - previewX) * 0.1;
+      previewY += (previewMouseY - previewY) * 0.1;
+      preview.style.left = (previewX + 30) + 'px';
+      preview.style.top  = (previewY - 120) + 'px';
+      requestAnimationFrame(animatePreview);
+    }
+    animatePreview();
+
+    document.addEventListener('mousemove', e => {
+      previewMouseX = e.clientX;
+      previewMouseY = e.clientY;
+    });
+
+    projectItems.forEach((item, i) => {
+      const data = previewContent[i];
+      item.addEventListener('mouseenter', () => {
+        document.body.classList.add('cursor-on-project');
+        preview.classList.add('visible');
+        previewIn.innerHTML = `
+          <div style="
+            width:100%; height:100%;
+            background:${data.bg};
+            display:flex; flex-direction:column;
+            align-items:center; justify-content:center;
+            gap:0.4rem;
+            border-bottom: 3px solid ${data.color};
+          ">
+            <span style="
+              font-family:'Syne',sans-serif;
+              font-size:1.4rem; font-weight:800;
+              letter-spacing:0.08em;
+              color:${data.color};
+              text-align:center;
+              line-height:1.1;
+            ">${data.label}</span>
+            <span style="
+              font-family:'Inter',sans-serif;
+              font-size:0.62rem; letter-spacing:0.15em;
+              text-transform:uppercase;
+              color:rgba(255,255,255,0.35);
+            ">${data.sub}</span>
+          </div>
+        `;
+      });
+      item.addEventListener('mouseleave', () => {
+        document.body.classList.remove('cursor-on-project');
+        preview.classList.remove('visible');
+      });
+    });
+
+    // ════════════════════════════════════════
+    // PARALLAX on feature visuals
+    // ════════════════════════════════════════
+    const featureVisuals = document.querySelectorAll('.feature-visual');
+    window.addEventListener('scroll', () => {
+      featureVisuals.forEach(visual => {
+        const rect   = visual.getBoundingClientRect();
+        const center = rect.top + rect.height / 2;
+        const vCenter= window.innerHeight / 2;
+        const offset = (center - vCenter) * 0.06;
+        const thumb  = visual.querySelector('.feature-thumb-body');
+        if (thumb) thumb.style.transform = `translateY(${offset}px)`;
+      });
+    }, { passive: true });
+
+    // ════════════════════════════════════════
+    // HERO GRID — subtle mouse parallax
+    // ════════════════════════════════════════
+    const heroGrid = document.querySelector('.hero-grid');
+    if (heroGrid) {
+      document.addEventListener('mousemove', e => {
+        const rx = (e.clientX / window.innerWidth  - 0.5) * 20;
+        const ry = (e.clientY / window.innerHeight - 0.5) * 10;
+        heroGrid.style.transform = `translate(${rx}px, ${ry}px)`;
+      });
+    }
+    // ════════════════════════════════════════
+    // HERO CANVAS ANIMATION - DOT GRID
+    // ════════════════════════════════════════
+    const canvas = document.getElementById('hero-canvas');
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      let width, height;
+      function resize() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+      
+      const spacing = 22; // Tight grid like antigravity
+      let mouse = { x: -1000, y: -1000 };
+      
+      document.addEventListener('mousemove', (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+      });
+      document.addEventListener('mouseleave', () => {
+        mouse.x = -1000;
+        mouse.y = -1000;
+      });
+      
+      let dots = [];
+      let cols, rows;
+      
+      function initGrid() {
+        dots = [];
+        cols = Math.floor(width / spacing) + 3;
+        rows = Math.floor(height / spacing) + 3;
+        for (let i = -1; i < cols; i++) {
+          for (let j = -1; j < rows; j++) {
+            dots.push({
+              hx: i * spacing,
+              hy: j * spacing,
+              x: i * spacing,
+              y: j * spacing
+            });
+          }
+        }
+      }
+      initGrid();
+      window.addEventListener('resize', initGrid);
+      
+      let time = 0;
+      function draw() {
+        ctx.clearRect(0, 0, width, height);
+        time += 0.015; 
+        
+        dots.forEach(dot => {
+          let dx = mouse.x - dot.hx;
+          let dy = mouse.y - dot.hy;
+          let dist = Math.sqrt(dx*dx + dy*dy);
+          
+          let repelX = 0;
+          let repelY = 0;
+          let force = 0;
+          
+          if (dist < 180) {
+            force = (180 - dist) / 180;
+            repelX = -(dx / dist) * force * 35; // Push away from cursor
+            repelY = -(dy / dist) * force * 35;
+          }
+          
+          // Subtle overarching wave motion
+          let wave = Math.sin(time + dot.hx * 0.005 + dot.hy * 0.005) * 4;
+          
+          let tx = dot.hx + repelX;
+          let ty = dot.hy + repelY + wave;
+          
+          // Spring physics
+          dot.x += (tx - dot.x) * 0.15;
+          dot.y += (ty - dot.y) * 0.15;
+          
+          let alpha = 0.15; // default faint dot
+          if (force > 0) alpha += force * 0.35;
+          let radius = 1.0;
+          if (force > 0) radius += force * 1.5;
+          
+          ctx.fillStyle = `rgba(234, 234, 234, ${alpha})`;
+          ctx.beginPath();
+          ctx.arc(dot.x, dot.y, radius, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        
+        requestAnimationFrame(draw);
+      }
+      draw();
+    }
+  
+    // ════════════════════════════════════════
+    // MAGNETIC BUTTONS
+    // ════════════════════════════════════════
+    const magnetics = document.querySelectorAll('.feature-link, .project-cta, .about-link');
+    magnetics.forEach(btn => {
+      btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        const h = rect.width / 2;
+        const v = rect.height / 2;
+        const x = e.clientX - rect.left - h;
+        const y = e.clientY - rect.top - v;
+        btn.style.transform = `translate(${x * 0.15}px, ${y * 0.15}px)`;
+        btn.style.transition = 'none';
+      });
+      btn.addEventListener('mouseleave', () => {
+        btn.style.transform = `translate(0px, 0px)`;
+        btn.style.transition = 'transform 0.4s var(--ease-out)';
+      });
+    });
+
+    // ════════════════════════════════════════
+    // SCROLL VELOCITY SKEW
+    // ════════════════════════════════════════
+    let scrollVelocity = 0;
+    let lastScroll = window.scrollY;
+    const skewElements = document.querySelectorAll('.feature-visual');
+    function renderScroll() {
+      const currentScroll = window.scrollY;
+      scrollVelocity = currentScroll - lastScroll;
+      lastScroll = currentScroll;
+      
+      // Clamp the skew
+      let skew = scrollVelocity * 0.03;
+      if (skew > 4) skew = 4;
+      if (skew < -4) skew = -4;
+      
+      skewElements.forEach(el => {
+        el.style.transform = `skewY(${-skew}deg)`;
+        el.style.transition = 'transform 0.1s linear';
+      });
+      requestAnimationFrame(renderScroll);
+    }
+    renderScroll();
+
+    // ════════════════════════════════════════
+    // TEXT SCRAMBLE REVEAL
+    // ════════════════════════════════════════
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+    const scrambleElements = document.querySelectorAll('.feature-title');
+    
+    const scrambleObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !entry.target.dataset.scrambled) {
+          entry.target.dataset.scrambled = "true";
+          const originalHTML = entry.target.innerHTML;
+          const originalText = entry.target.innerText;
+          
+          let iterations = 0;
+          const maxIterations = 14;
+          
+          const interval = setInterval(() => {
+            entry.target.innerText = originalText.split("").map((char, index) => {
+              if (index < iterations) return originalText[index];
+              return letters[Math.floor(Math.random() * letters.length)];
+            }).join("");
+            
+            iterations += 1;
+            
+            if (iterations >= originalText.length || iterations >= maxIterations) {
+              clearInterval(interval);
+              entry.target.innerHTML = originalHTML;
+            }
+          }, 75);
+        }
+      });
+    }, { threshold: 0.25, rootMargin: '0px' });
+    
+    scrambleElements.forEach(el => scrambleObserver.observe(el));
+
+  </script>
+</body>
+</html>
