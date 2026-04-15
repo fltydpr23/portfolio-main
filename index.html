@@ -1359,6 +1359,18 @@
       z-index: 10;
       pointer-events: auto;
     }
+  
+    /* Cinematic Intro */
+    .hero-content-minimal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 2s cubic-bezier(0.16, 1, 0.3, 1), transform 2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .hero-content-minimal.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
   </style>
   <style>
     .hero-canvas-bg {
@@ -1376,6 +1388,18 @@
       z-index: 10;
       pointer-events: auto;
     }
+  
+    /* Cinematic Intro */
+    .hero-content-minimal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 2s cubic-bezier(0.16, 1, 0.3, 1), transform 2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .hero-content-minimal.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
   </style>
   <link rel="icon" href="file:///Users/Adhi/Downloads/xna1fs2q1e751.jpg" type="image/jpeg">
 </head>
@@ -1863,9 +1887,20 @@
     // ════════════════════════════════════════
     // LOADER
     // ════════════════════════════════════════
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0,0);
+
     window.addEventListener('load', () => {
+      window.scrollTo(0, 0);
       setTimeout(() => {
         document.getElementById('loader').classList.add('hidden');
+        // Wait 1.2s for the wavetable to breathe, then fade in the text
+        setTimeout(() => {
+          const heroContent = document.querySelector('.hero-content-minimal');
+          if (heroContent) heroContent.classList.add('show');
+        }, 1200);
       }, 1600);
     });
 
@@ -2128,23 +2163,28 @@
             repelY = -(dy / dist) * force * 35;
           }
           
-          // Subtle overarching wave motion
-          let wave = Math.sin(time + dot.hx * 0.005 + dot.hy * 0.005) * 4;
+          // Elegant rolling ocean wave
+          let wavePhase = time + dot.hx * 0.003 + dot.hy * 0.004;
+          let waveX = Math.cos(wavePhase) * 12; // horizontal sway
+          let waveY = Math.sin(wavePhase) * 12; // vertical swell
           
-          let tx = dot.hx + repelX;
-          let ty = dot.hy + repelY + wave;
+          let tx = dot.hx + repelX + waveX;
+          let ty = dot.hy + repelY + waveY;
           
           // Spring physics
           dot.x += (tx - dot.x) * 0.15;
           dot.y += (ty - dot.y) * 0.15;
           
-          let alpha = 0.15; // default faint dot
-          if (force > 0) alpha += force * 0.35;
-          let radius = 1.0;
+          let waveCrest = Math.sin(wavePhase); // from -1 to 1
+          
+          let alpha = 0.12 + (waveCrest * 0.08); // default faint dot pulsing
+          if (force > 0) alpha += force * 0.4;
+          let radius = 1.0 + (waveCrest * 0.5); // subtly change size
           if (force > 0) radius += force * 1.5;
           
           ctx.fillStyle = `rgba(234, 234, 234, ${alpha})`;
           ctx.beginPath();
+          if (radius < 0) radius = 0; // prevent negative radius errors
           ctx.arc(dot.x, dot.y, radius, 0, Math.PI * 2);
           ctx.fill();
         });
