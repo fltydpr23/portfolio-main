@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title> MacBook Pro Field Inspection Terminal + AI Benchmark</title>
+  <title> MacBook Pro Field Inspection Terminal + Diagnostic Apps</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
 
@@ -193,13 +193,22 @@
   <script>
     const FULL_CHECKLIST = [
       {
-        phase: "Phase 0: Gear & Pre-Arrival Setup",
+        phase: "Phase 0A: Gear & Pre-Arrival Hardware Setup",
         items: [
-          { id: "p0_ssd", label: "Bring External High-Speed NVMe Storage", sub: "USB-C / Thunderbolt NVMe SSD with test models / benchmarks pre-loaded." },
+          { id: "p0_ssd", label: "Bring External High-Speed NVMe Storage", sub: "USB-C / Thunderbolt NVMe SSD with diagnostic installers & models pre-loaded." },
           { id: "p0_cables", label: "Bring Testing Cables & Media", sub: "USB-C to USB-C cable, HDMI cable, and full-size SD card." },
           { id: "p0_audio", label: "Bring Audio Equipment", sub: "3.5mm wired headphones + Bluetooth headphones." },
           { id: "p0_hotspot", label: "Mobile Hotspot Active", sub: "Phone hotspot enabled with active mobile data for setup test." },
           { id: "p0_docs", label: "Apple ID & Invoice Check", sub: "Apple account login ready; ask seller for box, invoice, or receipt." }
+        ]
+      },
+      {
+        phase: "Phase 0B: Pre-Load Testing Apps on External Drive",
+        items: [
+          { id: "p0b_coconut", label: "coconutBattery (Battery Health Audit)", sub: "Install coconutBattery to compare Design Capacity (mAh) vs Full Charge Capacity (mAh) & manufacture date." },
+          { id: "p0b_drivedx", label: "DriveDx / Blackmagic Disk Speed Test", sub: "Pre-install Blackmagic Disk Speed Test & DriveDx for NVMe SMART health." },
+          { id: "p0b_bench", label: "Geekbench 6 & Cinebench 2024", sub: "Pre-load Cinebench and Geekbench DMG installers on external SSD." },
+          { id: "p0b_ai", label: "LM Studio / Jan / Ollama", sub: "Pre-install LM Studio or Jan app with a 7B/8B GGUF model pre-downloaded on SSD." }
         ]
       },
       {
@@ -222,7 +231,7 @@
           { id: "p2_profiles", label: "Device Management Settings", sub: "System Settings → General → Device Management. Ensure 0 organization profiles exist." },
           { id: "p2_sip", label: "System Integrity Protection (SIP) Check", sub: "Verify SIP is enabled to guarantee OS isn't patched to hide locks.", code: "csrutil status" },
           { id: "p2_fmm", label: "NVRAM Find My Mobile Token Test", sub: "Verify Secure Enclave directly for active Find My bindings.", code: "nvram -p | grep -i 'fmm'" },
-          { id: "p2_battery", label: "Battery Health & RAW Capacity Dump", sub: "Condition must be 'Normal'. Verify claimed 183 cycles / 96% capacity.", code: "ioreg -l | grep -i capacity" },
+          { id: "p2_coconut_run", label: "coconutBattery Raw Health Verification", sub: "Run coconutBattery. Compare Full Charge Capacity vs Design Capacity (Target: ~96% health / 183 cycles). Check battery manufacture date vs laptop week." },
           { id: "p2_warranty", label: "AppleCare / Warranty Checker", sub: "Run serial on checkcoverage.apple.com to verify official Apple coverage." }
         ]
       },
@@ -268,7 +277,7 @@
       }
     ];
 
-    let db = JSON.parse(localStorage.getItem('macbook_inspector_v4')) || {
+    let db = JSON.parse(localStorage.getItem('macbook_inspector_v5')) || {
       activeId: 'unit_1',
       units: {
         'unit_1': { label: 'Unit #1 (24-Core / 64GB)', serial: '', price: '₹1.55L (Target: ₹1.38L)', battery: '96% / 183 cycles', checks: {}, notes: {}, aiData: { mlxSpeed: '62', ollamaSpeed: '54' } }
@@ -276,7 +285,7 @@
     };
 
     function saveDB() {
-      localStorage.setItem('macbook_inspector_v4', JSON.stringify(db));
+      localStorage.setItem('macbook_inspector_v5', JSON.stringify(db));
       render();
     }
 
@@ -318,7 +327,7 @@
       const u = getActiveUnit();
       if (!u.aiData) u.aiData = {};
       u.aiData[type] = val;
-      localStorage.setItem('macbook_inspector_v4', JSON.stringify(db));
+      localStorage.setItem('macbook_inspector_v5', JSON.stringify(db));
       renderChecklist();
     }
 
@@ -350,7 +359,7 @@
     function updateNote(itemId, val) {
       const u = getActiveUnit();
       u.notes[itemId] = val;
-      localStorage.setItem('macbook_inspector_v4', JSON.stringify(db));
+      localStorage.setItem('macbook_inspector_v5', JSON.stringify(db));
     }
 
     function copyCode(text) {
