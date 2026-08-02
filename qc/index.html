@@ -3,554 +3,901 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MacBook Pro Field Inspection</title>
+  <title>M1 Max MacBook Pro Field Inspection Terminal</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,800;1,400&family=SF+Pro+Display:wght@300;400;500;600;700&display=swap');
+
     :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
+      --bg: #030712;
+      --card-bg: rgba(17, 24, 39, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-border-active: rgba(56, 189, 248, 0.3);
+      --text: #f9fafb;
+      --text-muted: #9ca3af;
+      --text-dim: #4b5563;
       --accent: #38bdf8;
-      --accent-success: #22c55e;
-      --accent-danger: #ef4444;
-      --accent-warning: #f59e0b;
-      --border: #334155;
+      --accent-glow: rgba(56, 189, 248, 0.15);
+      --success: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.15);
+      --danger: #ef4444;
+      --danger-glow: rgba(239, 68, 68, 0.15);
+      --warning: #f59e0b;
+      --code-bg: #000000;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
 
     body {
       background-color: var(--bg);
       color: var(--text);
-      padding-bottom: 80px;
+      padding-bottom: 120px;
+      line-height: 1.5;
+      overflow-x: hidden;
     }
 
-    /* Sticky Header & Progress Bar */
+    /* Ambient Mesh Gradient Background */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at 50% -20%, rgba(56, 189, 248, 0.08), transparent 70%),
+                  radial-gradient(circle at 0% 100%, rgba(16, 185, 129, 0.05), transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Header & Progress HUD */
     header {
       position: sticky;
       top: 0;
-      background-color: rgba(15, 23, 42, 0.9);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      padding: 16px;
+      background: rgba(3, 7, 18, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 16px 20px;
       z-index: 100;
     }
 
-    .header-content {
-      max-width: 600px;
+    .header-container {
+      max-width: 680px;
       margin: 0 auto;
     }
 
-    .title-row {
+    .brand-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
-    h1 {
-      font-size: 1.1rem;
-      font-weight: 700;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .brand-apple {
       color: var(--text);
+      font-size: 1.1rem;
     }
 
-    .progress-text {
+    .progress-counter {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 0.85rem;
       font-weight: 600;
       color: var(--accent);
+      background: var(--accent-glow);
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
     }
 
-    .progress-bar-bg {
+    .progress-track {
       width: 100%;
-      height: 8px;
-      background-color: var(--border);
-      border-radius: 4px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 2px;
       overflow: hidden;
     }
 
-    .progress-bar-fill {
+    .progress-bar {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, var(--accent), var(--accent-success));
-      transition: width 0.3s ease;
+      background: linear-gradient(90deg, #38bdf8, #10b981);
+      box-shadow: 0 0 12px var(--accent);
+      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* Main Content Layout */
     main {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 16px;
+      max-width: 680px;
+      margin: 24px auto 0;
+      padding: 0 16px;
     }
 
-    /* Target Banner */
+    /* Target Device Spec Card */
     .target-card {
-      background-color: var(--card-bg);
-      border: 1px solid var(--accent);
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
     }
 
-    .target-card h2 {
+    .target-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+      background: var(--accent);
+    }
+
+    .target-title {
       font-size: 0.75rem;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.1em;
       color: var(--accent);
-      margin-bottom: 4px;
+      font-weight: 700;
+      margin-bottom: 6px;
     }
 
-    .target-card p {
-      font-size: 0.95rem;
-      font-weight: 600;
+    .target-specs {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .target-subtext {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 4px;
     }
 
     /* Rules Banner */
-    .rule-card {
-      background-color: rgba(239, 68, 68, 0.1);
-      border-left: 4px solid var(--accent-danger);
-      padding: 12px;
-      border-radius: 4px 8px 8px 4px;
-      margin-bottom: 24px;
-      font-size: 0.85rem;
+    .rule-banner {
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.88rem;
       font-weight: 600;
       color: #fca5a5;
     }
 
     /* Section Styling */
-    section {
-      margin-bottom: 28px;
+    .phase-group {
+      margin-bottom: 40px;
     }
 
-    .section-header {
+    .phase-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .phase-title {
       font-size: 1rem;
       font-weight: 700;
-      color: var(--accent);
-      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+      color: var(--text);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
-    /* To-do Item Cards */
-    .todo-item {
+    .phase-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      background: var(--accent-glow);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    /* Checkbox Items */
+    .todo-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 10px;
       display: flex;
       align-items: flex-start;
-      gap: 12px;
-      background-color: var(--card-bg);
-      border: 1px solid var(--border);
-      padding: 14px;
-      border-radius: 10px;
-      margin-bottom: 8px;
+      gap: 14px;
       cursor: pointer;
       user-select: none;
-      transition: transform 0.1s ease, border-color 0.2s ease, background-color 0.2s ease;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .todo-item:active {
-      transform: scale(0.98);
+    .todo-card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
     }
 
-    /* Checkbox Styling */
-    .checkbox {
+    .todo-card:active {
+      transform: scale(0.985);
+    }
+
+    .custom-check {
       width: 22px;
       height: 22px;
       border-radius: 6px;
-      border: 2px solid var(--text-muted);
+      border: 1.5px solid var(--text-dim);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      margin-top: 1px;
+      margin-top: 2px;
       transition: all 0.2s ease;
     }
 
-    .checkbox svg {
+    .custom-check svg {
       width: 14px;
       height: 14px;
+      stroke: #000;
+      stroke-width: 3.5;
       fill: none;
-      stroke: white;
-      stroke-width: 3;
       stroke-linecap: round;
       stroke-linejoin: round;
       opacity: 0;
       transform: scale(0.5);
-      transition: all 0.2s ease;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .todo-content {
+    .todo-body {
       flex: 1;
     }
 
-    .todo-text {
-      font-size: 0.95rem;
+    .todo-label {
+      font-size: 0.93rem;
+      font-weight: 500;
       color: var(--text);
-      line-height: 1.35;
+      line-height: 1.4;
     }
 
-    .code-block {
-      background-color: #090d16;
-      border: 1px solid var(--border);
-      color: #e2e8f0;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    .todo-sub {
       font-size: 0.8rem;
-      padding: 8px 10px;
-      border-radius: 6px;
-      margin-top: 8px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Code Snippet Display */
+    .code-box {
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-top: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: #38bdf8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       word-break: break-all;
-      user-select: all;
+    }
+
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      font-size: 0.7rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-left: 8px;
+      flex-shrink: 0;
+    }
+
+    .copy-btn:active {
+      background: var(--accent);
+    }
+
+    /* Callout Boxes */
+    .callout {
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.8rem;
+      margin-top: 10px;
+      line-height: 1.4;
+    }
+
+    .callout-stop {
+      background: var(--danger-glow);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+
+    .callout-warn {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #fde68a;
     }
 
     /* Checked State */
-    .todo-item.checked {
-      border-color: rgba(34, 197, 94, 0.3);
-      background-color: rgba(30, 41, 59, 0.5);
+    .todo-card.checked {
+      background: rgba(17, 24, 39, 0.3);
+      border-color: rgba(16, 185, 129, 0.2);
     }
 
-    .todo-item.checked .checkbox {
-      background-color: var(--accent-success);
-      border-color: var(--accent-success);
+    .todo-card.checked .custom-check {
+      background: var(--success);
+      border-color: var(--success);
+      box-shadow: 0 0 10px var(--success-glow);
     }
 
-    .todo-item.checked .checkbox svg {
+    .todo-card.checked .custom-check svg {
       opacity: 1;
       transform: scale(1);
     }
 
-    .todo-item.checked .todo-text {
-      text-decoration: line-through;
+    .todo-card.checked .todo-label {
       color: var(--text-muted);
+      text-decoration: line-through;
     }
 
-    /* Callout Boxes inside lists */
-    .callout {
-      padding: 10px 12px;
+    /* Embedded Utilities (Pixel Test / Keyboard Tester) */
+    .util-container {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .util-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--accent);
+      padding: 6px 12px;
       border-radius: 6px;
-      font-size: 0.85rem;
-      margin-top: 8px;
-      line-height: 1.3;
-    }
-
-    .callout-danger {
-      background-color: rgba(239, 68, 68, 0.15);
-      border: 1px solid var(--accent-danger);
-      color: #fca5a5;
-    }
-
-    .callout-warning {
-      background-color: rgba(245, 158, 11, 0.15);
-      border: 1px solid var(--accent-warning);
-      color: #fde68a;
-    }
-
-    /* Fixed Reset Button at Bottom */
-    .reset-btn {
-      position: fixed;
-      bottom: 16px;
-      right: 16px;
-      background-color: var(--border);
-      color: var(--text);
-      border: none;
-      padding: 10px 16px;
-      border-radius: 20px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
       cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .util-btn:hover {
+      background: var(--accent-glow);
+      border-color: var(--accent);
+    }
+
+    /* Modal for Fullscreen Pixel Inspector */
+    #pixelCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1000;
+      display: none;
+      cursor: pointer;
+    }
+
+    /* Float Actions */
+    .float-bar {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      padding: 8px 16px;
+      border-radius: 40px;
+      display: flex;
+      gap: 12px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.8);
       z-index: 99;
     }
 
-    .reset-btn:active {
-      transform: scale(0.95);
+    .float-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .float-btn:hover {
+      color: var(--text);
+    }
+
+    .float-btn.danger {
+      color: #fca5a5;
+    }
+
+    .float-btn.danger:hover {
+      background: var(--danger-glow);
     }
   </style>
 </head>
 <body>
 
+  <!-- Fullscreen Pixel Inspector Layer -->
+  <div id="pixelCanvas" onclick="nextPixelColor()"></div>
+
   <header>
-    <div class="header-content">
-      <div class="title-row">
-        <h1>MacBook Field Inspection</h1>
-        <div class="progress-text" id="progressText">0% Complete</div>
+    <div class="header-container">
+      <div class="brand-row">
+        <div class="brand"><span class="brand-apple"></span> PRO INSPECTOR</div>
+        <div class="progress-counter" id="progressCount">0 / 0 (0%)</div>
       </div>
-      <div class="progress-bar-bg">
-        <div class="progress-bar-fill" id="progressBar"></div>
+      <div class="progress-track">
+        <div class="progress-bar" id="progressBar"></div>
       </div>
     </div>
   </header>
 
   <main>
     <div class="target-card">
-      <h2>Target Specs</h2>
-      <p>16-inch M1 Max | 64GB Memory | 1TB SSD</p>
+      <div class="target-title">Target Device Baseline</div>
+      <div class="target-specs">16-inch M1 Max MacBook Pro</div>
+      <div class="target-subtext">64GB Unified Memory • 1TB NVMe SSD • Baseline ~106 cycles / 94% Capacity</div>
     </div>
 
-    <div class="rule-card">
-      ⚠️ RULE: Do not transfer money until all mandatory checks pass.
+    <div class="rule-banner">
+      🛑 RULE: ZERO MONEY TRANSFERS UNTIL ALL GATEKEEPERS PASS.
     </div>
 
     <!-- PHASE 0 -->
-    <section>
-      <div class="section-header">Phase 0: Pre-Arrival Preparation</div>
-      
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Bring USB-C / Thunderbolt external drive</div></div>
+    <div class="phase-group">
+      <div class="phase-header">
+        <div class="phase-title"><span class="phase-num">00</span> Phase 0: Gear & Pre-Arrival Setup</div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">External High-Speed Storage</div>
+          <div class="todo-sub">USB-C / Thunderbolt NVMe drive or fast flash drive packed.</div>
+        </div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Cables & Media Adaptors</div>
+          <div class="todo-sub">USB-C to USB-C cable, HDMI cable, SD card.</div>
+        </div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Audio Devices</div>
+          <div class="todo-sub">3.5mm wired headphones + Bluetooth headphones.</div>
+        </div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Mobile Hotspot Readiness</div>
+          <div class="todo-sub">Phone hotspot enabled with data for MDM verification.</div>
+        </div>
       </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Bring USB-C cables, SD card, and headphones</div></div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Bring phone with active hotspot enabled</div></div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Have your Apple ID credentials ready</div></div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Ask seller for original invoice/box/serial details</div></div>
-      </label>
-    </section>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Apple ID & Documentation</div>
+          <div class="todo-sub">Apple Account login ready; request seller box/receipt/invoice.</div>
+        </div>
+      </div>
+    </div>
 
     <!-- PHASE 1 -->
-    <section>
-      <div class="section-header">Phase 1: Physical Triage</div>
+    <div class="phase-group">
+      <div class="phase-header">
+        <div class="phase-title"><span class="phase-num">01</span> Phase 1: Physical & Structural Triage</div>
+      </div>
 
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Inspect 4 corners & known dent (confirm strictly cosmetic)</div></div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Check chassis for bends, twisting, or uneven gaps</div></div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Inspect bottom case & screws for screwdriver/tamper marks</div></div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Inspect glass/frame for cracks or pressure spots</div></div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Test hinge action (~10 opens/closes, sits flush when shut)</div></div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Inspect inside of every port for physical damage</div></div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content">
-          <div class="todo-text">Ask seller direct history: repair marks, liquid damage, board/display/battery replacements?</div>
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Four Corner Chassis & Dent Audit</div>
+          <div class="todo-sub">Inspect all 4 chassis corners. Carefully inspect the existing dent—confirm strictly cosmetic.</div>
         </div>
-      </label>
-    </section>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Chassis Torsion & Seam Alignment</div>
+          <div class="todo-sub">Confirm lid sits 100% flush when closed. Check bottom case gaps and chassis for bends/twists.</div>
+        </div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-content">
+          <div class="todo-label">Bottom Plate & Screw Inspection</div>
+          <div class="todo-sub">Inspect Pentalobe screws for stripping, wear, or unauthorized tool marks.</div>
+        </div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Display Frame & Hinge Action</div>
+          <div class="todo-sub">Open/close display ~10 times. Check hinge resistance and verify screen glass has no hairline cracks or pressure spots.</div>
+        </div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">I/O Port Physical Integrity</div>
+          <div class="todo-sub">Flash phone light into MagSafe, 3x Thunderbolt, HDMI, Headphone, and SD card slot. Check for corrosion or bent pins.</div>
+        </div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Interrogate Seller On Repairs</div>
+          <div class="todo-sub">Ask explicitly: Has it ever been opened? Logic board, display, or battery replaced? Any liquid exposure?</div>
+        </div>
+      </div>
+    </div>
 
     <!-- PHASE 2 -->
-    <section>
-      <div class="section-header">Phase 2: Power-On & Specs</div>
+    <div class="phase-group">
+      <div class="phase-header">
+        <div class="phase-title"><span class="phase-num">02</span> Phase 2: Hardware Specs & Enterprise Locks</div>
+      </div>
 
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content">
-          <div class="todo-text">Check <b> → About This Mac</b></div>
-          <div class="callout callout-warning">Must show: M1 Max / 64GB / 1TB</div>
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">About This Mac Verification</div>
+          <div class="todo-sub">Confirm: 16-inch MacBook Pro, Apple M1 Max, 64GB Memory, 1TB SSD.</div>
+        </div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Hardware Serial Triangulation</div>
+          <div class="todo-sub">Confirm terminal output matches 'About This Mac', the bottom case engraving, and original box.</div>
+          <div class="code-box" onclick="stopPropagation(event)">
+            <span>system_profiler SPHardwareDataType</span>
+            <button class="copy-btn" onclick="copyCode('system_profiler SPHardwareDataType')">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">MDM & DEP Corporate Lock Audit</div>
+          <div class="todo-sub">Run both enrollment status terminal commands. MUST show Enrolled via DEP: No.</div>
+          <div class="code-box" onclick="stopPropagation(event)">
+            <span>profiles status -type enrollment</span>
+            <button class="copy-btn" onclick="copyCode('profiles status -type enrollment')">Copy</button>
+          </div>
+          <div class="code-box" onclick="stopPropagation(event)">
+            <span>sudo profiles show -type enrollment</span>
+            <button class="copy-btn" onclick="copyCode('sudo profiles show -type enrollment')">Copy</button>
+          </div>
+          <div class="callout callout-stop">If Enrolled via DEP = YES or MDM Enrollment = YES: STOP. DO NOT BUY.</div>
+        </div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">System Settings Profile Check</div>
+          <div class="todo-sub">Navigate to System Settings → General → Device Management. Ensure zero corporate profiles are loaded.</div>
+        </div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Battery Health & RAW Capacity Verification</div>
+          <div class="todo-sub">Check condition is "Normal". Compare vs seller claims (~106 cycles / ~94% capacity). Run raw dump:</div>
+          <div class="code-box" onclick="stopPropagation(event)">
+            <span>ioreg -l | grep -i capacity</span>
+            <button class="copy-btn" onclick="copyCode('ioreg -l | grep -i capacity')">Copy</button>
+          </div>
         </div>
       </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content">
-          <div class="todo-text">Verify Serial in Terminal vs. Box vs. About This Mac</div>
-          <div class="code-block">system_profiler SPHardwareDataType</div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Apple Warranty & Coverage Verification</div>
+          <div class="todo-sub">Check serial on checkcoverage.apple.com to verify AppleCare+ active status.</div>
         </div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content">
-          <div class="todo-text">Verify MDM / Corporate Enrollment Status</div>
-          <div class="code-block">profiles status -type enrollment</div>
-          <div class="code-block">sudo profiles show -type enrollment</div>
-          <div class="callout callout-danger">Must show: Enrolled via DEP: No | MDM enrollment: No</div>
-        </div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content">
-          <div class="todo-text">Check <b>System Settings → General → Device Management</b> (Ensure empty)</div>
-        </div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content">
-          <div class="todo-text">Check Battery Health (Target: ~106 cycles / ~94% capacity)</div>
-          <div class="callout callout-warning">System Settings → Battery → Health must be "Normal"</div>
-        </div>
-      </label>
-    </section>
+      </div>
+    </div>
 
     <!-- PHASE 3 -->
-    <section>
-      <div class="section-header">Phase 3: Hardware & Ports Test</div>
+    <div class="phase-group">
+      <div class="phase-header">
+        <div class="phase-title"><span class="phase-num">03</span> Phase 3: Display, I/O & Peripheral Stress</div>
+      </div>
 
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">MagSafe charging (LED turns on, percentage increases)</div></div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Test read/write on <b>ALL USB-C / Thunderbolt Ports</b></div></div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Test SD Card slot (Read/Write)</div></div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Test HDMI port out to external screen/audio</div></div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Headphone jack (L/R channels, no crackling)</div></div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Keyboard test (Type EVERY key in TextEdit + TouchID)</div></div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Trackpad test (Click full surface, gestures, force touch)</div></div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Display test (Check solid colors for dead pixels/bright spots)</div></div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Camera, Microphone (Photo Booth check) & Speakers</div></div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Connect Wi-Fi (Hotspot test) & pair Bluetooth device</div></div>
-      </label>
-    </section>
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Display Color Pixel & Backlight Test</div>
+          <div class="todo-sub">Launch full-screen pixel generator (White, Black, Red, Green, Blue, Grey). Check dead/stuck pixels, pressure spots, backlight bleed.</div>
+          <div class="util-container" onclick="stopPropagation(event)">
+            <button class="util-btn" onclick="startPixelTest()">Launch Pixel Inspector ↗</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">ProMotion 120Hz Refresh Rate Check</div>
+          <div class="todo-sub">System Settings → Displays. Confirm ProMotion active. Drag window rapidly across screen—verify glass-smooth rendering.</div>
+        </div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Test ALL USB-C / Thunderbolt Ports (3 Total)</div>
+          <div class="todo-sub">Plug external SSD into every port individually. Verify stable detection, mount speed, and read/write access.</div>
+        </div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">MagSafe Charging Port</div>
+          <div class="todo-sub">Plug MagSafe charger. Verify orange/green LED, charging sound, and percentage increase.</div>
+        </div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">HDMI Output & SD Card Reader</div>
+          <div class="todo-sub">Insert SD card (verify read/write). Connect HDMI out to display (verify video & audio routing).</div>
+        </div>
+      </div
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">3.5mm Headphone Jack</div>
+          <div class="todo-sub">Plug in wired headphones. Check Left/Right channels and turn plug inside jack to check for static/crackling.</div>
+        </div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Keyboard & Touch ID Sweep</div>
+          <div class="todo-sub">Open TextEdit. Click EVERY key (Letters, Numbers, Shift, Cmd, Option, Ctrl, Fn, Esc, Arrows, Space, Return, Delete, Brightness, Volume). Set up Touch ID.</div>
+        </div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Force Touch Trackpad Inspection</div>
+          <div class="todo-sub">Click top corners, middle, bottom. Perform 2-finger scroll, pinch-to-zoom, 3-finger gesture, Force Click. Check dead zones.</div>
+        </div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Camera, Mics & Speaker Sweep</div>
+          <div class="todo-sub">Launch Photo Booth (Check camera clarity). Record voice memo (check microphone clarity). Play high-volume audio (check bass & stereo rattling).</div>
+        </div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Wi-Fi & Bluetooth Stability</div>
+          <div class="todo-sub">Connect to phone hotspot, execute speed test. Pair Bluetooth headphones, walk 5 paces away—check disconnects.</div>
+        </div>
+      </div>
+    </div>
 
     <!-- PHASE 4 -->
-    <section>
-      <div class="section-header">Phase 4: Diagnostics & Stress Tests</div>
+    <div class="phase-group">
+      <div class="phase-header">
+        <div class="phase-title"><span class="phase-num">04</span> Phase 4: Diagnostics, Thermals & Dev Workloads</div>
+      </div>
 
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content">
-          <div class="todo-text">Run Apple Diagnostics</div>
-          <div class="callout">Shutdown → Hold Power → Startup Options → Press <b>Cmd + D</b></div>
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Apple Diagnostics (Hardware Test)</div>
+          <div class="todo-sub">Shutdown → Hold Power button until Options appear → Press <b>Cmd + D</b>. Confirm 0 hardware errors.</div>
         </div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Blackmagic Disk Speed Test (Multi-GB/s read/write required)</div></div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Run Cinebench / Geekbench (No crashes, artifacts, or throttling)</div></div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Run Dev Workflow (Cursor, Next.js build, Docker, local Ollama/MLX model)</div></div>
-      </label>
-    </section>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">NVMe Storage Performance Audit</div>
+          <div class="todo-sub">Run Blackmagic Disk Speed Test. Target: Multi-GB/s reads & writes with zero drops or errors. Run storage profile:</div>
+          <div class="code-box" onclick="stopPropagation(event)">
+            <span>system_profiler SPStorageDataType</span>
+            <button class="copy-btn" onclick="copyCode('system_profiler SPStorageDataType')">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">CPU/GPU Thermal Stress (Geekbench / Cinebench)</div>
+          <div class="todo-sub">Run multi-core Cinebench 2024 / Geekbench 6. Watch for shutdowns, screen artifacts, thermal throttling or fan grinding.</div>
+        </div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Real-World Gaming Stress (15 Mins)</div>
+          <div class="todo-sub">Launch a native Steam game for 15 mins. Check rendering stability, heat distribution, fan noise, zero graphical glitches.</div>
+        </div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Local Dev Workflow & AI Inference Stress Test</div>
+          <div class="todo-sub">Launch Cursor/VS Code, Next.js build, Docker containers, and run local LLM (Ollama / MLX). Check memory swap and system responsiveness.</div>
+        </div>
+      </div>
+    </div>
 
     <!-- PHASE 5 -->
-    <section>
-      <div class="section-header">Phase 5: The Ultimate Gatekeeper (Reset Pass)</div>
+    <div class="phase-group">
+      <div class="phase-header">
+        <div class="phase-title"><span class="phase-num">05</span> Phase 5: The Gatekeeper (Factory Reset Pass)</div>
+      </div>
 
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content"><div class="todo-text">Seller signs out of Apple Account / Find My</div></div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content">
-          <div class="todo-text">Execute: <b>Erase All Content and Settings</b></div>
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Apple ID & Find My Logout</div>
+          <div class="todo-sub">Seller must sign out of Apple Account in System Settings. Disable Find My Mac explicitly.</div>
         </div>
-      </label>
-      <label class="todo-item">
-        <div class="checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div class="todo-content">
-          <div class="todo-text">Complete Setup Assistant via Hotspot</div>
-          <div class="callout callout-danger">WALK AWAY IMMEDIATELY IF: Activation Lock or Remote Management appears.</div>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Execute Full Erase All Content & Settings</div>
+          <div class="todo-sub">System Settings → General → Transfer or Reset → Erase All Content and Settings. Wipe machine completely.</div>
         </div>
-      </label>
-    </section>
+      </div>
+
+      <div class="todo-card" onclick="toggleCard(this)">
+        <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <div class="todo-body">
+          <div class="todo-label">Activation Lock & Hotspot Setup Assistant</div>
+          <div class="todo-sub">Connect to phone hotspot during initial Setup Assistant screens. Proceed until home screen. Confirm ZERO Activation Lock or Remote Management prompts.</div>
+          <div class="callout callout-stop">IF REMOTE MANAGEMENT OR ACTIVATION LOCK APPEARS: DO NOT BUY. WALK AWAY.</div>
+        </div>
+      </div>
+    </div>
 
   </main>
 
-  <button class="reset-btn" onclick="resetAll()">Reset Checklist</button>
+  <div class="float-bar">
+    <button class="float-btn danger" onclick="resetAll()">Reset All</button>
+  </div>
 
   <script>
-    const items = document.querySelectorAll('.todo-item');
+    // State management & LocalStorage
+    const cards = document.querySelectorAll('.todo-card');
     const progressBar = document.getElementById('progressBar');
-    const progressText = document.getElementById('progressText');
+    const progressCount = document.getElementById('progressCount');
 
-    // Load state
+    function updateProgress() {
+      const total = cards.length;
+      const checked = document.querySelectorAll('.todo-card.checked').length;
+      const pct = Math.round((checked / total) * 100);
+
+      progressBar.style.width = pct + '%';
+      progressCount.textContent = `${checked} / ${total} (${pct}%)`;
+    }
+
     function loadState() {
-      const saved = JSON.parse(localStorage.getItem('macbook_checklist_state') || '{}');
-      items.forEach((item, index) => {
-        if (saved[index]) {
-          item.classList.add('checked');
+      const saved = JSON.parse(localStorage.getItem('macbook_pro_inspection_v2') || '{}');
+      cards.forEach((card, idx) => {
+        if (saved[idx]) {
+          card.classList.add('checked');
         } else {
-          item.classList.remove('checked');
+          card.classList.remove('checked');
         }
       });
       updateProgress();
     }
 
-    // Save state
     function saveState() {
       const state = {};
-      items.forEach((item, index) => {
-        state[index] = item.classList.contains('checked');
+      cards.forEach((card, idx) => {
+        state[idx] = card.classList.contains('checked');
       });
-      localStorage.setItem('macbook_checklist_state', JSON.stringify(state));
+      localStorage.setItem('macbook_pro_inspection_v2', JSON.stringify(state));
     }
 
-    // Update Progress Bar
-    function updateProgress() {
-      const total = items.length;
-      const checkedCount = document.querySelectorAll('.todo-item.checked').length;
-      const percentage = Math.round((checkedCount / total) * 100);
-
-      progressBar.style.width = percentage + '%';
-      progressText.textContent = `${percentage}% Complete`;
+    function toggleCard(card) {
+      card.classList.toggle('checked');
+      saveState();
+      updateProgress();
     }
 
-    // Toggle items
-    items.forEach((item) => {
-      item.addEventListener('click', (e) => {
-        // Prevent click trigger if clicking inside code blocks to select text
-        if (e.target.classList.contains('code-block')) return;
-        
-        item.classList.toggle('checked');
-        saveState();
-        updateProgress();
-      });
-    });
+    function stopPropagation(e) {
+      e.stopPropagation();
+    }
 
-    // Reset All Function
+    function copyCode(text) {
+      navigator.clipboard.writeText(text);
+      alert('Copied to clipboard: ' + text);
+    }
+
     function resetAll() {
-      if (confirm("Reset all checkboxes?")) {
-        localStorage.removeItem('macbook_checklist_state');
+      if (confirm('Are you sure you want to reset all checklist items?')) {
+        localStorage.removeItem('macbook_pro_inspection_v2');
         loadState();
+      }
+    }
+
+    // Dynamic Display Pixel Inspector Tool
+    const pixelColors = ['#ffffff', '#000000', '#ff0000', '#00ff00', '#0000ff', '#808080'];
+    let currentColorIdx = 0;
+    const pixelCanvas = document.getElementById('pixelCanvas');
+
+    function startPixelTest() {
+      currentColorIdx = 0;
+      pixelCanvas.style.backgroundColor = pixelColors[currentColorIdx];
+      pixelCanvas.style.display = 'block';
+    }
+
+    function nextPixelColor() {
+      currentColorIdx++;
+      if (currentColorIdx >= pixelColors.length) {
+        pixelCanvas.style.display = 'none';
+      } else {
+        pixelCanvas.style.backgroundColor = pixelColors[currentColorIdx];
       }
     }
 
