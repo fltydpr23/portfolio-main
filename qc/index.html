@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title> MacBook Pro Field Inspection Terminal</title>
+  <title> MacBook Pro Field Inspection Terminal + AI Benchmark</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
 
@@ -16,6 +16,7 @@
       --accent: #38bdf8;
       --accent-glow: rgba(56, 189, 248, 0.15);
       --success: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.15);
       --danger: #ef4444;
       --warning: #f59e0b;
       --code-bg: #000000;
@@ -89,16 +90,22 @@
     .note-input { width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--card-border); color: var(--text); padding: 8px 10px; border-radius: 6px; font-size: 0.8rem; margin-top: 10px; resize: vertical; display: none; }
     .todo-card.has-note .note-input, .todo-card:hover .note-input, .todo-card:focus-within .note-input { display: block; }
 
+    /* AI Benchmark Widget */
+    .ai-bench-box { background: rgba(0, 0, 0, 0.6); border: 1px solid var(--card-border); border-radius: 8px; padding: 12px; margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .ai-bench-field label { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 4px; }
+    .ai-bench-field input { width: 100%; background: #111827; border: 1px solid var(--card-border); color: var(--accent); font-family: 'JetBrains Mono', monospace; padding: 6px 8px; border-radius: 4px; font-size: 0.82rem; }
+    .ai-status-badge { grid-column: span 2; font-size: 0.78rem; font-weight: 600; padding: 6px 10px; border-radius: 6px; text-align: center; }
+    .ai-status-pass { background: var(--success-glow); border: 1px solid var(--success); color: #6ee7b7; }
+    .ai-status-warn { background: rgba(245, 158, 11, 0.15); border: 1px solid var(--warning); color: #fde68a; }
+
     /* Floating Action Bar */
     .float-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(17, 24, 39, 0.9); backdrop-filter: blur(16px); border: 1px solid var(--card-border); padding: 8px 16px; border-radius: 40px; display: flex; gap: 10px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); z-index: 99; }
     .float-btn { background: transparent; border: none; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; padding: 6px 12px; border-radius: 20px; cursor: pointer; }
     .float-btn.primary { background: var(--accent); color: #000; }
     .float-btn.danger { color: #fca5a5; }
 
-    /* Display Tester Fullscreen Modal */
+    /* Modals */
     #pixelCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1000; display: none; cursor: pointer; }
-
-    /* Keyboard Tester Fullscreen Overlay */
     #keyTesterModal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 1000; display: none; padding: 20px; box-sizing: border-box; color: #fff; overflow-y: auto; }
     .key-grid { display: flex; flex-wrap: wrap; gap: 6px; max-width: 800px; margin: 20px auto; }
     .key-cap { background: #1e293b; border: 1px solid #334155; padding: 8px 12px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; min-width: 32px; text-align: center; }
@@ -110,11 +117,12 @@
       header, .float-bar, .device-bar, .copy-btn, .util-btn { display: none !important; }
       .meta-card, .todo-card { background: #fff !important; border: 1px solid #ccc !important; color: #000 !important; page-break-inside: avoid; }
       .todo-label, .meta-field label { color: #000 !important; }
-      .todo-sub, .meta-field input { color: #333 !important; border: none !important; padding: 0 !important; }
+      .todo-sub, .meta-field input, .ai-bench-field input { color: #333 !important; border: none !important; padding: 0 !important; }
       .note-input { display: block !important; background: #f8fafc !important; color: #000 !important; border: 1px solid #cbd5e1 !important; }
       .todo-card.checked .custom-check { background: #000 !important; border-color: #000 !important; }
       .todo-card.checked .custom-check svg { stroke: #fff !important; opacity: 1 !important; transform: scale(1) !important; }
       .callout-stop { background: #fee2e2 !important; color: #991b1b !important; border: 1px solid #f87171 !important; }
+      .ai-bench-box { background: #f1f5f9 !important; border: 1px solid #cbd5e1 !important; }
     }
   </style>
 </head>
@@ -152,25 +160,25 @@
     <!-- Active Device Meta -->
     <div class="meta-card">
       <div class="meta-field">
-        <label>Unit Label / Color</label>
-        <input type="text" id="metaLabel" placeholder="e.g. Unit #1 - Space Gray" onchange="updateMeta()">
+        <label>Unit Model & GPU</label>
+        <input type="text" id="metaLabel" placeholder="M1 Max 24-Core GPU / 64GB / 1TB" onchange="updateMeta()">
       </div>
       <div class="meta-field">
         <label>Serial Number</label>
         <input type="text" id="metaSerial" placeholder="C02..." onchange="updateMeta()">
       </div>
       <div class="meta-field">
-        <label>Asking Price</label>
-        <input type="text" id="metaPrice" placeholder="$1,450" onchange="updateMeta()">
+        <label>Asking Price / Target</label>
+        <input type="text" id="metaPrice" placeholder="₹1.55L (Target: ₹1.38L)" onchange="updateMeta()">
       </div>
       <div class="meta-field">
         <label>Battery Capacity / Cycles</label>
-        <input type="text" id="metaBattery" placeholder="94% / 106 cycles" onchange="updateMeta()">
+        <input type="text" id="metaBattery" placeholder="96% / 183 cycles" onchange="updateMeta()">
       </div>
     </div>
 
     <div class="rule-banner">
-      🛑 RULE: Do not pay until all Phase 1-5 deal-breakers pass completely.
+      🛑 RULE: Target price revised to ₹1.38L–₹1.40L due to 24-Core GPU & 183 cycles.
     </div>
 
     <div id="checklistContainer"></div>
@@ -187,7 +195,7 @@
       {
         phase: "Phase 0: Gear & Pre-Arrival Setup",
         items: [
-          { id: "p0_ssd", label: "Bring External High-Speed Storage", sub: "USB-C / Thunderbolt NVMe SSD or fast flash drive packed." },
+          { id: "p0_ssd", label: "Bring External High-Speed NVMe Storage", sub: "USB-C / Thunderbolt NVMe SSD with test models / benchmarks pre-loaded." },
           { id: "p0_cables", label: "Bring Testing Cables & Media", sub: "USB-C to USB-C cable, HDMI cable, and full-size SD card." },
           { id: "p0_audio", label: "Bring Audio Equipment", sub: "3.5mm wired headphones + Bluetooth headphones." },
           { id: "p0_hotspot", label: "Mobile Hotspot Active", sub: "Phone hotspot enabled with active mobile data for setup test." },
@@ -208,13 +216,13 @@
       {
         phase: "Phase 2: Configuration, Locks & Apple Silicon Security",
         items: [
-          { id: "p2_about", label: "About This Mac Verification", sub: "Verify: 16-inch MacBook Pro, Apple M1 Max, 64GB Unified Memory, 1TB SSD." },
+          { id: "p2_about", label: "About This Mac Verification", sub: "Verify: 16-inch MacBook Pro, Apple M1 Max (Confirm if 24-Core or 32-Core GPU), 64GB Memory, 1TB SSD." },
           { id: "p2_serial", label: "Serial Triangulation", sub: "Verify terminal serial matches 'About This Mac', bottom case engraving, and box/receipt.", code: "system_profiler SPHardwareDataType" },
           { id: "p2_mdm", label: "MDM & Corporate Enrollment Audit", sub: "Run enrollment status commands. Must show Enrolled via DEP: No.", code: "profiles status -type enrollment; sudo profiles show -type enrollment", stop: "If Enrolled via DEP = YES or MDM Enrollment = YES: STOP. DO NOT BUY." },
           { id: "p2_profiles", label: "Device Management Settings", sub: "System Settings → General → Device Management. Ensure 0 organization profiles exist." },
           { id: "p2_sip", label: "System Integrity Protection (SIP) Check", sub: "Verify SIP is enabled to guarantee OS isn't patched to hide locks.", code: "csrutil status" },
           { id: "p2_fmm", label: "NVRAM Find My Mobile Token Test", sub: "Verify Secure Enclave directly for active Find My bindings.", code: "nvram -p | grep -i 'fmm'" },
-          { id: "p2_battery", label: "Battery Health & RAW Capacity Dump", sub: "Condition must be 'Normal'. Verify claimed ~106 cycles / ~94% capacity.", code: "ioreg -l | grep -i capacity" },
+          { id: "p2_battery", label: "Battery Health & RAW Capacity Dump", sub: "Condition must be 'Normal'. Verify claimed 183 cycles / 96% capacity.", code: "ioreg -l | grep -i capacity" },
           { id: "p2_warranty", label: "AppleCare / Warranty Checker", sub: "Run serial on checkcoverage.apple.com to verify official Apple coverage." }
         ]
       },
@@ -224,7 +232,7 @@
           { id: "p3_magsafe", label: "MagSafe Charging Test", sub: "Plug MagSafe charger. Verify LED indicator, charging chime, and percentage increment." },
           { id: "p3_usbc", label: "Test ALL 3 USB-C / Thunderbolt Ports", sub: "Connect external SSD to every port individually. Verify stable mount, read, and write." },
           { id: "p3_hdmi_sd", label: "HDMI Output & SD Card Reader", sub: "Insert SD card (check read/write). Connect HDMI out to external screen/audio." },
-          { id: "p3_jack", label: "3.5mm Headphone Jack", sub: "Plug headphones. Test Left/Right channels and rotate plug to test for crackling." },
+          { id: "p3_jack", label: "3.5mm Headphone Jack", sub: "Plug headphones. Test Left/Right channels and rotate plug to test for static." },
           { id: "p3_display", label: "Display Color & Pixel Inspector", sub: "Run full-screen white, black, red, green, blue, grey screens. Check dead pixels and backlight bleed.", util: "pixel" },
           { id: "p3_promotion", label: "ProMotion 120Hz Refresh Rate", sub: "System Settings → Displays. Confirm ProMotion active; test window dragging smoothness." },
           { id: "p3_keyboard", label: "Keyboard & Touch ID Sweep", sub: "Open TextEdit and press EVERY single key. Test modifier keys, function keys, and Touch ID.", util: "keyboard" },
@@ -234,14 +242,20 @@
         ]
       },
       {
-        phase: "Phase 4: Diagnostics, Thermals & Dev Workloads",
+        phase: "Phase 4A: Diagnostics, Thermals & Dev Workloads",
         items: [
           { id: "p4_diag", label: "Apple Diagnostics (Cmd + D)", sub: "Shutdown → Hold Power → Startup Options → Press Cmd + D. Confirm 0 hardware errors." },
           { id: "p4_ssd_perf", label: "NVMe Speed & Smart Dump", sub: "Run Blackmagic Speed Test. Ensure multi-GB/s sustained reads/writes with zero drops.", code: "system_profiler SPStorageDataType" },
           { id: "p4_bench", label: "CPU/GPU Benchmark Stress", sub: "Run Geekbench 6 / Cinebench 2024. Confirm no freezes, crashes, or graphical artifacts." },
           { id: "p4_thermal", label: "SMC Thermal & Fan Powermetrics", sub: "Run while benchmark is active. Verify dual fans ramp smoothly and chip doesn't throttle.", code: "sudo powermetrics --samplers smc | grep -i 'fan\\|cpu temp'" },
-          { id: "p4_game", label: "Real-World Gaming Test (15 Mins)", sub: "Run a native Steam game for 15 mins to test sustained GPU/thermal stability." },
-          { id: "p4_dev", label: "Development Workflow & Local LLM", sub: "Launch Cursor, Next.js build, Docker, and local model (Ollama / MLX). Check memory swap responsiveness." }
+          { id: "p4_dev", label: "Development Workflow (Cursor / Next.js / Docker)", sub: "Launch Cursor, Next.js build, Docker containers, and check memory swap responsiveness." }
+        ]
+      },
+      {
+        phase: "Phase 4B: Local AI & Unified Memory Benchmark",
+        items: [
+          { id: "p4b_mlx", label: "MLX Framework Inference & Token Speed Test", sub: "Run MLX generation benchmark on a 7B or 8B model. Target: ~50–65 tokens/sec.", code: "mlx_lm.generate --model mlx-community/Llama-3.2-3B-Instruct-4bit --prompt 'Write Next.js route'", aiBench: "mlx" },
+          { id: "p4b_ollama", label: "Ollama / llama.cpp Metal Acceleration", sub: "Run Ollama CLI or LM Studio benchmark. Verify GPU Metal acceleration is active and memory bandwidth hits ~400 GB/s baseline.", code: "ollama run llama3:8b 'Explain unified memory'", aiBench: "ollama" }
         ]
       },
       {
@@ -254,15 +268,15 @@
       }
     ];
 
-    let db = JSON.parse(localStorage.getItem('macbook_inspector_v3')) || {
+    let db = JSON.parse(localStorage.getItem('macbook_inspector_v4')) || {
       activeId: 'unit_1',
       units: {
-        'unit_1': { label: 'Unit #1 (Silver)', serial: '', price: '', battery: '', checks: {}, notes: {} }
+        'unit_1': { label: 'Unit #1 (24-Core / 64GB)', serial: '', price: '₹1.55L (Target: ₹1.38L)', battery: '96% / 183 cycles', checks: {}, notes: {}, aiData: { mlxSpeed: '62', ollamaSpeed: '54' } }
       }
     };
 
     function saveDB() {
-      localStorage.setItem('macbook_inspector_v3', JSON.stringify(db));
+      localStorage.setItem('macbook_inspector_v4', JSON.stringify(db));
       render();
     }
 
@@ -300,9 +314,17 @@
       saveDB();
     }
 
+    function updateAiBench(type, val) {
+      const u = getActiveUnit();
+      if (!u.aiData) u.aiData = {};
+      u.aiData[type] = val;
+      localStorage.setItem('macbook_inspector_v4', JSON.stringify(db));
+      renderChecklist();
+    }
+
     function addNewDevice() {
       const id = 'unit_' + Date.now();
-      db.units[id] = { label: `Unit #${Object.keys(db.units).length + 1}`, serial: '', price: '', battery: '', checks: {}, notes: {} };
+      db.units[id] = { label: `Unit #${Object.keys(db.units).length + 1}`, serial: '', price: '', battery: '', checks: {}, notes: {}, aiData: {} };
       db.activeId = id;
       saveDB();
     }
@@ -328,7 +350,7 @@
     function updateNote(itemId, val) {
       const u = getActiveUnit();
       u.notes[itemId] = val;
-      localStorage.setItem('macbook_inspector_v3', JSON.stringify(db));
+      localStorage.setItem('macbook_inspector_v4', JSON.stringify(db));
     }
 
     function copyCode(text) {
@@ -361,6 +383,35 @@
           if (item.util === 'pixel') utilBtn = `<button class="util-btn" onclick="startPixelTest(event)">Launch Pixel Inspector ↗</button>`;
           if (item.util === 'keyboard') utilBtn = `<button class="util-btn" onclick="openKeyTester(event)">Launch Keyboard Tester ↗</button>`;
 
+          let aiWidget = '';
+          if (item.aiBench) {
+            const aiVal = (u.aiData && u.aiData[item.aiBench]) ? u.aiData[item.aiBench] : '';
+            const numVal = parseFloat(aiVal) || 0;
+            let statusClass = 'ai-status-warn';
+            let statusText = 'Awaiting Test Result';
+
+            if (numVal >= 45) {
+              statusClass = 'ai-status-pass';
+              statusText = `PASSED: ${numVal} t/s hits M1 Max 400 GB/s Unified Bandwidth Baseline`;
+            } else if (numVal > 0) {
+              statusText = `WARNING: ${numVal} t/s is below M1 Max baseline (Check thermal/throttling)`;
+            }
+
+            aiWidget = `
+              <div class="ai-bench-box" onclick="event.stopPropagation()">
+                <div class="ai-bench-field">
+                  <label>Tokens / Sec (t/s)</label>
+                  <input type="number" placeholder="e.g. 58" value="${aiVal}" onchange="updateAiBench('${item.aiBench}', this.value)">
+                </div>
+                <div class="ai-bench-field">
+                  <label>Target Threshold</label>
+                  <input type="text" value="≥ 45 t/s (8B Q4)" readonly>
+                </div>
+                <div class="ai-status-badge ${statusClass}">${statusText}</div>
+              </div>
+            `;
+          }
+
           itemEl.innerHTML = `
             <div class="todo-header-row" onclick="toggleCheck('${item.id}')">
               <div class="custom-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
@@ -370,6 +421,7 @@
                 ${item.code ? `<div class="code-box"><span>${item.code}</span><button class="copy-btn" onclick="event.stopPropagation(); copyCode('${item.code}')">Copy</button></div>` : ''}
                 ${item.stop ? `<div class="callout-stop">${item.stop}</div>` : ''}
                 ${utilBtn}
+                ${aiWidget}
               </div>
             </div>
             <textarea class="note-input" placeholder="Add specific note for this test..." onchange="updateNote('${item.id}', this.value)" onclick="event.stopPropagation()">${noteVal}</textarea>
