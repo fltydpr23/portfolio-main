@@ -59,9 +59,10 @@
     .meta-field label { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; display: block; margin-bottom: 4px; }
     .meta-field input { width: 100%; background: #000; border: 1px solid var(--card-border); color: var(--text); padding: 8px 10px; border-radius: 6px; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace; }
 
-    /* Collapsible Warning Strategy Drawer */
+    /* Discrete Collapsible STRAT! Drawer */
     .strategy-drawer { background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 12px; margin-bottom: 24px; overflow: hidden; transition: all 0.3s ease; }
     .strategy-header { padding: 12px 16px; font-size: 0.82rem; font-weight: 700; color: #fde68a; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+    .strategy-title { font-family: 'JetBrains Mono', monospace; letter-spacing: 0.1em; font-weight: 800; color: #f59e0b; }
     .strategy-badge { background: rgba(245, 158, 11, 0.2); color: #fcd34d; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(245, 158, 11, 0.3); }
     .strategy-body { padding: 0 16px 14px 16px; font-size: 0.82rem; color: #fef3c7; border-top: 1px dashed rgba(245, 158, 11, 0.2); display: none; line-height: 1.5; }
     .strategy-drawer.open .strategy-body { display: block; padding-top: 10px; }
@@ -183,17 +184,16 @@
       </div>
     </div>
 
-    <!-- Discrete Warning Panel / Collapsible Strategy Drawer -->
+    <!-- Minimalist Stealth Strategy Drawer -->
     <div class="strategy-drawer" id="strategyDrawer">
       <div class="strategy-header" onclick="toggleDrawer()">
-        <span>⚠️ Target Price Guidance & Strategy</span>
+        <span class="strategy-title">STRAT!</span>
         <div style="display:flex; align-items:center; gap:8px;">
-          <span class="strategy-badge">₹1.38L – ₹1.40L</span>
           <span class="toggle-icon">▼</span>
         </div>
       </div>
       <div class="strategy-body">
-        <p><b>Target Price Revised:</b> ₹1.38L – ₹1.40L (Down from ₹1.55L asking price).</p>
+        <p><b>Target Price Range:</b> ₹1.38L – ₹1.40L (Down from ₹1.55L asking price).</p>
         <p style="margin-top:6px;"><b>Talking Points:</b></p>
         <ul style="padding-left:18px; margin-top:4px;">
           <li>This unit is the <b>24-Core GPU</b> variant (base M1 Max tier), not the top 32-Core.</li>
