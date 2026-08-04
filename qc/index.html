@@ -55,12 +55,18 @@
     .device-tab.active { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); }
 
     /* Metadata Card */
-    .meta-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 16px; margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .meta-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 16px; margin-bottom: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .meta-field label { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; display: block; margin-bottom: 4px; }
     .meta-field input { width: 100%; background: #000; border: 1px solid var(--card-border); color: var(--text); padding: 8px 10px; border-radius: 6px; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace; }
 
-    /* Banner Rule */
-    .rule-banner { background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; padding: 12px 16px; margin-bottom: 20px; font-size: 0.85rem; font-weight: 600; color: #fca5a5; display: flex; align-items: center; gap: 8px; }
+    /* Collapsible Warning Strategy Drawer */
+    .strategy-drawer { background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 12px; margin-bottom: 24px; overflow: hidden; transition: all 0.3s ease; }
+    .strategy-header { padding: 12px 16px; font-size: 0.82rem; font-weight: 700; color: #fde68a; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+    .strategy-badge { background: rgba(245, 158, 11, 0.2); color: #fcd34d; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .strategy-body { padding: 0 16px 14px 16px; font-size: 0.82rem; color: #fef3c7; border-top: 1px dashed rgba(245, 158, 11, 0.2); display: none; line-height: 1.5; }
+    .strategy-drawer.open .strategy-body { display: block; padding-top: 10px; }
+    .strategy-drawer.open .toggle-icon { transform: rotate(180deg); }
+    .toggle-icon { transition: transform 0.2s ease; display: inline-block; }
 
     /* Phase Header */
     .phase-title { font-size: 0.95rem; font-weight: 700; color: var(--accent); margin: 28px 0 12px 0; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--card-border); padding-bottom: 6px; }
@@ -114,7 +120,7 @@
     /* PRINT STYLESHEET (PDF EXPORT ENGINE) */
     @media print {
       body { background: #fff !important; color: #000 !important; padding: 0 !important; }
-      header, .float-bar, .device-bar, .copy-btn, .util-btn { display: none !important; }
+      header, .float-bar, .device-bar, .copy-btn, .util-btn, .strategy-drawer { display: none !important; }
       .meta-card, .todo-card { background: #fff !important; border: 1px solid #ccc !important; color: #000 !important; page-break-inside: avoid; }
       .todo-label, .meta-field label { color: #000 !important; }
       .todo-sub, .meta-field input, .ai-bench-field input { color: #333 !important; border: none !important; padding: 0 !important; }
@@ -177,8 +183,24 @@
       </div>
     </div>
 
-    <div class="rule-banner">
-      🛑 RULE: Target price revised to ₹1.38L–₹1.40L due to 24-Core GPU & 183 cycles.
+    <!-- Discrete Warning Panel / Collapsible Strategy Drawer -->
+    <div class="strategy-drawer" id="strategyDrawer">
+      <div class="strategy-header" onclick="toggleDrawer()">
+        <span>⚠️ Target Price Guidance & Strategy</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span class="strategy-badge">₹1.38L – ₹1.40L</span>
+          <span class="toggle-icon">▼</span>
+        </div>
+      </div>
+      <div class="strategy-body">
+        <p><b>Target Price Revised:</b> ₹1.38L – ₹1.40L (Down from ₹1.55L asking price).</p>
+        <p style="margin-top:6px;"><b>Talking Points:</b></p>
+        <ul style="padding-left:18px; margin-top:4px;">
+          <li>This unit is the <b>24-Core GPU</b> variant (base M1 Max tier), not the top 32-Core.</li>
+          <li>Actual battery cycle count is <b>183 cycles</b> (advertised at ~106).</li>
+          <li>Cosmetic dent on chassis reduces future trade-in/resale valuation.</li>
+        </ul>
+      </div>
     </div>
 
     <div id="checklistContainer"></div>
@@ -291,6 +313,11 @@
 
     function getActiveUnit() {
       return db.units[db.activeId];
+    }
+
+    function toggleDrawer() {
+      const drawer = document.getElementById('strategyDrawer');
+      drawer.classList.toggle('open');
     }
 
     function renderDeviceBar() {
