@@ -225,9 +225,10 @@
         ]
       },
       {
-        phase: "Phase 0B: Pre-Load Testing Apps on External Drive",
+        phase: "Phase 0B: Pre-Load Testing Apps & CLI Utilities",
         items: [
           { id: "p0b_coconut", label: "coconutBattery (Battery Health Audit)", sub: "Install coconutBattery to compare Design Capacity (mAh) vs Full Charge Capacity (mAh) & manufacture date." },
+          { id: "p0b_btop", label: "btop / htop Terminal Process Monitor", sub: "Pre-load btop executable or Homebrew binary to monitor real-time CPU core scaling, fan RPM, and RAM allocation." },
           { id: "p0b_drivedx", label: "DriveDx / Blackmagic Disk Speed Test", sub: "Pre-install Blackmagic Disk Speed Test & DriveDx for NVMe SMART health." },
           { id: "p0b_bench", label: "Geekbench 6 & Cinebench 2024", sub: "Pre-load Cinebench and Geekbench DMG installers on external SSD." },
           { id: "p0b_ai", label: "LM Studio / Jan / Ollama", sub: "Pre-install LM Studio or Jan app with a 7B/8B GGUF model pre-downloaded on SSD." }
@@ -249,6 +250,7 @@
         items: [
           { id: "p2_about", label: "About This Mac Verification", sub: "Verify: 16-inch MacBook Pro, Apple M1 Max (Confirm if 24-Core or 32-Core GPU), 64GB Memory, 1TB SSD." },
           { id: "p2_serial", label: "Serial Triangulation", sub: "Verify terminal serial matches 'About This Mac', bottom case engraving, and box/receipt.", code: "system_profiler SPHardwareDataType" },
+          { id: "p2_ram_sysctl", label: "Kernel Byte-Level RAM Verification", sub: "Verify exact 64GB (68719476736 bytes) allocation directly from sysctl kernel calls.", code: "sysctl hw.memsize; system_profiler SPMemoryDataType" },
           { id: "p2_mdm", label: "MDM & Corporate Enrollment Audit", sub: "Run enrollment status commands. Must show Enrolled via DEP: No.", code: "profiles status -type enrollment; sudo profiles show -type enrollment", stop: "If Enrolled via DEP = YES or MDM Enrollment = YES: STOP. DO NOT BUY." },
           { id: "p2_profiles", label: "Device Management Settings", sub: "System Settings → General → Device Management. Ensure 0 organization profiles exist." },
           { id: "p2_sip", label: "System Integrity Protection (SIP) Check", sub: "Verify SIP is enabled to guarantee OS isn't patched to hide locks.", code: "csrutil status" },
@@ -277,7 +279,7 @@
         items: [
           { id: "p4_diag", label: "Apple Diagnostics (Cmd + D)", sub: "Shutdown → Hold Power → Startup Options → Press Cmd + D. Confirm 0 hardware errors." },
           { id: "p4_ssd_perf", label: "NVMe Speed & Smart Dump", sub: "Run Blackmagic Speed Test. Ensure multi-GB/s sustained reads/writes with zero drops.", code: "system_profiler SPStorageDataType" },
-          { id: "p4_bench", label: "CPU/GPU Benchmark Stress", sub: "Run Geekbench 6 / Cinebench 2024. Confirm no freezes, crashes, or graphical artifacts." },
+          { id: "p4_bench", label: "CPU/GPU Benchmark Stress + btop Monitor", sub: "Run Geekbench 6 / Cinebench 2024 alongside btop terminal monitor to watch core scaling & zero freezes/artifacts.", code: "btop" },
           { id: "p4_thermal", label: "SMC Thermal & Fan Powermetrics", sub: "Run while benchmark is active. Verify dual fans ramp smoothly and chip doesn't throttle.", code: "sudo powermetrics --samplers smc | grep -i 'fan\\|cpu temp'" },
           { id: "p4_dev", label: "Development Workflow (Cursor / Next.js / Docker)", sub: "Launch Cursor, Next.js build, Docker containers, and check memory swap responsiveness." }
         ]
